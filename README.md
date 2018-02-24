@@ -1,6 +1,20 @@
-# Ali0thNotes
-这是Ali0thNotes的日常笔记
-内容主要有：
-1 电脑相关
-2 安全相关
 
+# Ali0thNotes
+
+This is the Notes of Ali0th.For more and more times I lost my data and notes, I am awake to note down everything as well as update at github.
+
+> **Lean Life,lean Knowledge.**
+
+## Main Contents:
+
+1. Computer Daily
+2. Web Pentest
+3. Protocol Security
+
+## About Me
+
+ID: 木禾 / Ali0th
+
+Email: martin2877@foxmail.com
+
+Blog: martin2877.github.io
