@@ -21,6 +21,7 @@
     - RDP爆破
     - ssh爆破
     - ftp爆破
+    - mysql爆破
 - 系统漏洞
     - MS17010
 
@@ -57,3 +58,27 @@ https://github.com/vanhauser-thc/thc-hydra
 ### Responder
 
 https://github.com/SpiderLabs/Responder
+
+### bro
+
+bro.org
+
+### suricata
+
+http://suricata.readthedocs.io/en/latest/
+
+### snort
+
+https://klionsec.github.io/2017/09/22/snortpentest/
+
+### nDPI
+
+https://github.com/ntop/nDPI
+
+### PacketSender
+
+https://github.com/dannagle/PacketSender
+
+### packetpig
+
+https://github.com/packetloop/packetpig

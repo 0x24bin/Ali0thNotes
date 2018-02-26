@@ -1,10 +1,10 @@
-# 基于中间人的LLMNR攻击
+# 基于LLMNR的中间人攻击
 
 ## 正常DNS查询流程
 
 1. 文件系统中的hosts文件
 
-配置文件地址：C:\Windows\System32\drivers\etc
+配置文件地址：`C:\Windows\System32\drivers\etc`
 
 2. 查找本地DNS缓存
 
@@ -27,6 +27,9 @@
 
 ![1](pic/基于LLMNR的中间人攻击1.jpg)
 
+![2](pic/基于LLMNR的中间人攻击2.jpg)
+
+
 ### 工具
 
 1. https://github.com/SpiderLabs/Responder
@@ -39,7 +42,7 @@
 
 responder -i 10.7.7.31
 
-2. 被攻击者访问不存在的域名
+2. 受害者使用smb访问不存在的域名
 
 \filesrvr
 
@@ -54,4 +57,10 @@ responder -i 10.7.7.31
 
 http://www.myh0st.cn/index.php/archives/230/
 
+利用LLMNR协议进行常规win内网渗透的理解与实践
 
+https://klionsec.github.io/2016/07/23/llmnr-wpad/
+
+Inveigh：Windows Powershell版的LLMNR/NBNS 协议欺骗/中间人工具
+
+https://www.anquanke.com/post/id/83671

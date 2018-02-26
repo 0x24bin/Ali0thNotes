@@ -1,5 +1,4 @@
-
-# WPAD
+# 基于WPAD的中间人攻击
 
 WPAD（web代理自动发现协议-Web Proxy Auto-Discovery Protocol），是客户端通过DHCP或DNS协议探测代理服务器配置脚本url的一种方式。当IE定位脚本并将脚本下载到本地之后，就可以通过该脚本来为不同的url选择相应的代理服务器。目前主流浏览器一般都支持WPAD。
 
@@ -43,7 +42,7 @@ http://wpad.example.com/wpad.dat
 
 
 
-## 攻击流程
+## 攻击原理
 
 根据上述顺序，可以对第一步进行DHCP投毒攻击。 DNS投毒攻击自然可以执行第二步，但正如我在本文开头所指出的，配置的网络设备可以防止这些攻击。当通过LLMNR进行查询时，该请求将通过广播去到网络中的每个客户端。 在这一点上，攻击者将他的wpad.dat文件发送到客户端，就像wpad服务器。
 
@@ -53,6 +52,21 @@ http://wpad.example.com/wpad.dat
 
 通过此配置，Internet Explorer在整个网络上进行WPAD名称解析查询
 
+## 简要步骤
+
+1. 提供假的http服务器并
+
+`responder -I eth0 -wFb`
+
+
+
+
+
+## 缓解WPAD攻击的方法
+
+1. 在DNS服务器上指定wpad服务器的地址
+
+2. 使用组策略设置禁止所有Internet浏览器上的“自动检测代理设置”。
 
 ## 资料
 
