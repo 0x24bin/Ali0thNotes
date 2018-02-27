@@ -40,7 +40,7 @@ ICMP报文也是封装在IP数据报的数据部分中进行传输的，ICMP软�
 
 实际使用场景主要有：
 
-文件传输、IP隧道（web）、SSH连接
+文件传输、IP隧道（web）、SSH连接、RDP连接
 
 
 
@@ -73,10 +73,10 @@ kill `ps aux | grep tcpdump | grep -v grep | awk '{print $2}'`
 ```
 ![2](pic/ICMP2.png)
 
-- 单位时间内，所有请求消息的消息数量**`（$\_###\_req\_msg\_num）`**，以及所有响应消息的消息平均数量**`（$\_###\_resp\_msg\_num）`**
-- 单位时间内，所有请求消息的Data平均长度**`（$\_###\_req\_msg\_length）`**，以及所有响应消息的Data平均长度**`（$\_###\_resp\_msg\_length）`**
-- 单位时间内，响应数据包中 payload 跟请求数据包不一致的 ICMP 数据包数量**`（$\_###\_diff\_msg\_num）`**。
--   ICMP 数据包的协议标签 **`（$\_###\_msg\_tag）`**
+- 单位时间内，所有请求消息的消息数量**（$\_###\_req\_msg\_num）**，以及所有响应消息的消息平均数量**（$\_###\_resp\_msg\_num）**
+- 单位时间内，所有请求消息的Data平均长度**（$\_###\_req\_msg\_length）**，以及所有响应消息的Data平均长度**（$\_###\_resp\_msg\_length）**
+- 单位时间内，响应数据包中 payload 跟请求数据包不一致的 ICMP 数据包数量**（$\_###\_diff\_msg\_num）**。
+-   ICMP 数据包的协议标签 **（$\_###\_msg\_tag）**
 
 
 
@@ -303,9 +303,9 @@ Proxy Server端配置
 
 Client端配置
 
-1）配置client.sh
+1）配置`client.sh`
 
-使用`route -n`查看本机的路由表，然后配置client.sh，将`route add -host <server> gw <gateway> dev <interface>`这一句，修改成本机环境的相应情况，如这里要配置\<server\>为Proxy Server的IP地址`192.168.1.118`，而\<gateway\>则为`0.0.0.0`，\<interface\>则为网卡，我的为`ens33`（一般是eth0）。
+使用`route -n`查看本机的路由表，然后配置`client.sh`，将`route add -host <server> gw <gateway> dev <interface>`这一句，修改成本机环境的相应情况，如这里要配置\<server\>为Proxy Server的IP地址`192.168.1.118`，而\<gateway\>则为`0.0.0.0`，\<interface\>则为网卡，我的为`ens33`（一般是eth0）。
 
 ![3](pic/ICMP3.png)
 
@@ -376,8 +376,9 @@ base64解码
 
 下载：http://www.cs.uit.no/~daniels/PingTunnel/PingTunnel-0.72.tar.gz
 
+exe下载(只有v0.62)：http://www.neophob.com/files/ptun-rel1.zip
 
-
+github:https://github.com/f1vefour/ptunnel
 
 
 #### 场景与优势
@@ -392,6 +393,41 @@ base64解码
 
 使用时需要root用户，最好客户端和服务端都是root权限。
 
+> 注意
+
+ptunnel只支持TCP
+
+
+#### 使用
+```bash
+Client: ./ptunnel -p <proxy address> -lp <listen port> -da <destination address>
+                  -dp <dest port> [-c <network device>] [-v <verbosity>] [-u]
+                  [-x password]
+Proxy: ./ptunnel [-c <network device>] [-v <verbosity>] [-u] [-x password]
+```
+-p - proxy的地址
+
+-lp - 本地端口
+
+-da - 远程服务器地址（因为此处要登录proxy本身，所以地址和proxy server地址相同，否则请使用要通过proxy访问的远程服务器的地址）
+
+-dp - 远程服务器端口
+
+
+
+win:
+ptunnel.exe -p 192.168.1.108 -lp 6666 -da www.91ri.org -dp 80 -v 4
+
+
+
+### Pshell(与ptunnel类似)
+
+https://github.com/izuolan/Pshell
+
+
+### icmptunnel/jamesbarlow)
+
+https://github.com/jamesbarlow/icmptunnel
 
 
 ### icmpsh
@@ -406,11 +442,13 @@ https://github.com/antirez/hping
 
 
 
+### Simple ICMP Tunnel
+
+https://sourceforge.net/projects/simpleicmptunnel/?source=directory
 
 
 
-
-### 资料
+## 资料
 
 RFC792
 
@@ -455,3 +493,7 @@ https://bbs.pediy.com/thread-213074.htm
 Internet Control Message Protocol (ICMP) Parameters
 
 https://www.iana.org/assignments/icmp-parameters/icmp-parameters.xhtml
+
+PingTunnel for Windows (ICMP tunnel)
+
+http://neophob.com/2007/10/pingtunnel-for-windows-icmp-tunnel/
