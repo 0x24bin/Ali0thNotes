@@ -22,11 +22,15 @@ GitLab CE 9.3.5
 
 git.tophant.com
 
+9.3.9
+
+https://hub.docker.com/r/gotfix/gitlab/
+
 GitLab CE 10.1.2
 
 https://58.240.177.119/gitlab/help
 
-9.5.4
+GitLab CE 9.5.4
 
 http://gitlab.laserbeam897.tk/help
 
@@ -34,15 +38,28 @@ xxx
 
 http://101.200.219.201:8000/anjing/gitlab-tutorial
 
+
+## 安装
+
+```bash
+sudo apt-get install curl openssh-server ca-certificates postfix
+curl -s https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.deb.sh | sudo bash
+sudo apt-get install gitlab-ce=8.10.3-ce.1  
+sudo gitlab-ctl reconfigure
+```
+
+
 ## 资料
 
 update blog
 
 https://about.gitlab.com/blog/archives.html
 
-hackone gitlab
+hackone gitlab([file](file/gitlab1.md))
 
 https://hackerone.com/gitlab/hacktivity?sort_type=latest_disclosable_activity_at&filter=type%3Aall%20to%3Agitlab&page=1&range=forever
+
+
 
 更新日志(搜`Security`即可知漏洞)
 
@@ -247,9 +264,7 @@ https://github.com/gitlabhq/gitlabhq/releases/tag/v10.3.4
 
 https://github.com/gitlabhq/gitlabhq/releases/tag/v10.3.3
 
-9.3.9
 
-https://hub.docker.com/r/gotfix/gitlab/
 
 
 ## GitLab 项目导入中的远程代码执行漏洞
