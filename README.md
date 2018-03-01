@@ -32,7 +32,7 @@ Blog: martin2877.github.io
 5. www.secsearch.top
 6. www.secdic.com
 7. paper.seebug.org
-8. shentoushi.top
+8. [渗透师](shentoushi.top)
 9. 先知社区
 10. 微信公众号
 11. 知识星球
@@ -40,6 +40,10 @@ Blog: martin2877.github.io
 13. 90sec
 14. 52pojie
 15. 看雪论坛
+16. [360威胁情况中心](https://ti.360.net/blog/)
+17. http://blog.nsfocus.net/
+18. http://blog.knownsec.com/
+19. https://www.exploit-db.com
 
 
 ## Article/Tools Collection
@@ -49,6 +53,7 @@ Blog: martin2877.github.io
 3. [Scanners-Box](https://github.com/We5ter/Scanners-Box)
 4. [SecLists](https://github.com/danielmiessler/SecLists)
 5. [pentest-wiki](https://github.com/nixawk/pentest-wiki)
+6. [安全加固](https://wiki.secyun.org/)
 
 
 ## Spacial Article
@@ -60,6 +65,8 @@ Blog: martin2877.github.io
 
 1. [Some-PoC-oR-ExP](https://github.com/coffeehb/Some-PoC-oR-ExP)
 2. [PayloadsAllTheThings](https://github.com/swisskyrepo/PayloadsAllTheThings)
+3. https://github.com/offensive-security/exploit-database
+
 
 
 ## Personal Website
@@ -70,4 +77,12 @@ http://www.ebwill.com/
 
 http://avfisher.win/
 
+https://www.leavesongs.com/
 
+http://www.economyofmechanism.com/
+
+https://www.webshell.cc/
+
+https://n0elle.cn/
+
+https://www.waitalone.cn/
