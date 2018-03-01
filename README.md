@@ -54,6 +54,7 @@ Blog: martin2877.github.io
 4. [SecLists](https://github.com/danielmiessler/SecLists)
 5. [pentest-wiki](https://github.com/nixawk/pentest-wiki)
 6. [安全加固](https://wiki.secyun.org/)
+7. [awesome-malware-analysis](https://github.com/rshipp/awesome-malware-analysis)
 
 
 ## Spacial Article
@@ -88,3 +89,7 @@ https://n0elle.cn/
 https://www.waitalone.cn/
 
 http://403.wiki/
+
+http://kerlinglovsec.lofter.com/
+
+
