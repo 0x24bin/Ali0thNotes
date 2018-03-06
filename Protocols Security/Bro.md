@@ -1,5 +1,13 @@
 ## Bro
 
+## 常用语句
+
+```
+export PATH=/usr/local/bro/bin:$PATH
+tcpdump -i ens33 -s 0 -w mypackets.trace
+bro -C -r icmp_tunnel.pcap ~/bro-scripts/entrypoint.bro
+```
+
 ### 资料：
 
 github：

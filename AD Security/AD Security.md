@@ -2,7 +2,29 @@
 
 
 
+## Tools
 
+NirLauncher
+
+http://launcher.nirsoft.net/downloads/index.html
+
+NirSoft
+
+http://www.nirsoft.net/utils/pspv.html
+
+SecurityXploded
+
+http://securityxploded.com/password-recovery-tools.php
+
+
+
+沙箱工具
+
+sandbox
+sandboxie
+cuckoo
+vxstream
+vmray
 
 
 ## 资料

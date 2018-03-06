@@ -41,12 +41,48 @@ http://101.200.219.201:8000/anjing/gitlab-tutorial
 
 ## 安装
 
+centos:
+https://mirrors.tuna.tsinghua.edu.cn/gitlab-ce/yum/el7/
 ```bash
 sudo apt-get install curl openssh-server ca-certificates postfix
 curl -s https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.deb.sh | sudo bash
 sudo apt-get install gitlab-ce=8.10.3-ce.1  
 sudo gitlab-ctl reconfigure
 ```
+
+
+ubuntu:
+https://mirrors.tuna.tsinghua.edu.cn/gitlab-ce/ubuntu/pool/trusty/main/g/gitlab-ce/
+
+环境要求：
+一直部署失败，是因为太卡了，配了2个cpu，2个核，内存2G才跑起来。
+
+```
+1
+curl -O https://mirrors.tuna.tsinghua.edu.cn/gitlab-ce/ubuntu/pool/trusty/main/g/gitlab-ce/gitlab-ce_10.3.3-ce.0_amd64.deb
+或
+curl -O https://mirrors.tuna.tsinghua.edu.cn/gitlab-ce/ubuntu/pool/trusty/main/g/gitlab-ce/gitlab-ce_10.3.4-ce.0_amd64.deb
+2
+sudo dpkg -i gitlab-ce_10.3.3-ce.0_amd64.deb
+3
+vim /etc/gitlab/gitlab.rb
+修改external_url = 'http://git.example.com'为external_url = 'http://192.168.72.133'
+4
+gitlab-ctl reconfigure
+```
+
+10.3.3
+http://192.168.72.133/help
+
+10.3.4
+http://192.168.72.134/help
+
+
+报错与fix:
+
+https://gitlab.com/gitlab-org/omnibus-gitlab/issues/253
+
+
 
 
 ## 资料
@@ -105,7 +141,7 @@ def restore
   ActiveRecord::Base.no_touchingdo
     create_relations
   end
-rescue => e  
+rescue => e
   shared.error(e)
   false
 end
@@ -265,6 +301,15 @@ https://github.com/gitlabhq/gitlabhq/releases/tag/v10.3.4
 https://github.com/gitlabhq/gitlabhq/releases/tag/v10.3.3
 
 
+
+10.3.3到10.3.4主要更新：
+- Prevent a SQL injection in the MilestonesFinder.
+- Fix RCE via project import mechanism.
+- Prevent OAuth login POST requests when a provider has been disabled.
+- Filter out sensitive fields from the project services API. (Robert Schilling)
+- Check user authorization for source and target projects when creating a merge request.
+- Fix path traversal in gitlab-ci.yml cache:key.
+- Fix writable shared deploy keys.
 
 
 ## GitLab 项目导入中的远程代码执行漏洞

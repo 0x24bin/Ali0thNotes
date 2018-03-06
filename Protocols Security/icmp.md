@@ -21,6 +21,21 @@ ICMP报文也是封装在IP数据报的数据部分中进行传输的，ICMP软�
 代码（Code）字段，长度是1字节，表示发送这个特定报文类型的原因。 
 校验和（Checksum）字段，长度是2字节，用于数据报传输过程中的差错控制。ICMP地校验和计算与IP报头的校验和类似，都是采用反码算术运算。
 
+## 攻击场景
+
+-  ICMP隧道
+    - HTTP访问
+    - SSH连接
+    - RDP连接
+- 文件传输
+- SMURF攻击(DOS攻击)
+- 洪水攻击(Fraggle Attack)
+- 信息收集(Information Gathering)
+- 路由跟踪(Trace Route)
+- 端口扫描
+- 系统指纹(OS fingerprinting)
+
+
 
 ## ICMP隧道
 
@@ -38,9 +53,6 @@ ICMP报文也是封装在IP数据报的数据部分中进行传输的，ICMP软�
 
 ![1](pic/ICMP1.png)
 
-实际使用场景主要有：
-
-文件传输、IP隧道（web）、SSH连接、RDP连接
 
 
 
@@ -126,6 +138,28 @@ do
     ps aux | grep tcpdump | grep -v grep | awk '{print $2}' | sudo xargs kill
 done
 ```
+
+
+4)导出结果
+```bash
+for i in $(find ../ -name "*.pcap")
+do
+    echo "[*] processing: ${i##*/}"
+    bro -C -r ../${i##*/} ~/bro-scripts/entrypoint.bro
+    i=${i##*/}
+    mv tophant.icmp.log ${i%%.pcap}.icmp.json
+done
+```
+
+
+```json
+{"ts":1517311625.345711,"P":2,"info_message":true,"request":true,"reply":false,"error_message":false,"orig_h":"192.168.1.116","resp_h":"192.168.1.118","itype":8,"icode":0,"len":59,"hlim":255,"v6":false,"id":26891,"seq":46182,"payload":"E\u0000\u0000;\u00d1Y@\u0000@\u0011\u0002V\u000a\u0000\u0001\u0002\u000a\u0000R\u0001\u009a\u00dd\u00005\u0000\u0027N\u00e0\u00f2\u00a9\u0001\u0000\u0000\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0003www\u0005baidu\u0003com\u0000\u0000\u0001\u0000\u0001"}
+{"ts":1517311625.345785,"P":2,"info_message":true,"request":true,"reply":false,"error_message":false,"orig_h":"192.168.1.116","resp_h":"192.168.1.118","itype":8,"icode":0,"len":59,"hlim":255,"v6":false,"id":65405,"seq":15102,"payload":"E\u0000\u0000;\u00d1Z@\u0000@\u0011\u0002U\u000a\u0000\u0001\u0002\u000a\u0000R\u0001\u009a\u00dd\u00005\u0000\u0027\u0089\u0019\u009dp\u0001\u0000\u0000\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0003www\u0005baidu\u0003com\u0000\u0000\u001c\u0000\u0001"}
+{"ts":1517311625.420802,"P":2,"info_message":true,"request":false,"reply":true,"error_message":false,"orig_h":"192.168.1.116","resp_h":"192.168.1.118","itype":0,"icode":0,"len":59,"hlim":255,"v6":false,"id":52623,"seq":55597,"payload":"E\u0000\u0000[R\u001f\u0000\u0000}\u0011\u0084p\u000a\u0000R\u0001\u000a\u0000\u0001\u0002\u00005\u009a\u00dd\u0000G\u00ad\u000e\u00f2\u00a9\u0081\u0080\u0000\u0001\u0000\u0002\u0000\u0000\u0000\u0000\u0003www\u0005baidu\u0003com\u0000\u0000\u0001\u0000\u0001\u00c0\u000c\u0000\u0001\u0000\u0001\u0000\u0000\u0000\u00c8\u0000\u0004s\u00ef\u00d3p\u00c0\u000c\u0000\u0001\u0000\u0001\u0000\u0000\u0000\u00c8\u0000\u0004s\u00ef\u00d2\u001b"}
+{"ts":1517311625.424624,"P":2,"info_message":true,"request":false,"reply":true,"error_message":false,"orig_h":"192.168.1.116","resp_h":"192.168.1.118","itype":0,"icode":0,"len":59,"hlim":255,"v6":false,"id":37281,"seq":41821,"payload":"E\u0000\u0000\u008fR \u0000\u0000}\u0011\u0084;\u000a\u0000R\u0001\u000a\u0000\u0001\u0002\u00005\u009a\u00dd\u0000{\u00e5Z\u009dp\u0081\u0080\u0000\u0001\u0000\u0001\u0000\u0001\u0000\u0000\u0003www\u0005baidu\u0003com\u0000\u0000\u001c\u0000\u0001\u00c0\u000c\u0000\u0005\u0000\u0001\u0000\u0000\u0001,\u0000\u000f\u0003www\u0001a\u0006shifen\u00c0\u0016\u00c0/\u0000\u0006\u0000\u0001\u0000\u0000\u00027\u0000-\u0003ns1\u00c0/\u0010baidu_dns_master\u00c0\u0010k]\u00a84\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0005\u0000\u0001Q\u0080\u0000\u0000\u000e\u0010"}
+{"ts":1517311625.477648,"P":2,"info_message":true,"request":true,"reply":false,"error_message":false,"orig_h":"192.168.1.116","resp_h":"192.168.1.118","itype":8,"icode":0,"len":59,"hlim":255,"v6":false,"id":5691,"seq":9991,"payload":"E\u0000\u0000<u]@\u0000@\u0006r\u00fd\u000a\u0000\u0001\u0002s\u00ef\u00d3p\u0084$\u0000P\u00ed\u00a6\u0009{\u0000\u0000\u0000\u0000\u00a0\u0002o\u00e0\u008d\u00a5\u0000\u0000\u0002\u0004\u0005\u0098\u0004\u0002\u0008\u000a\u0000y|\u0026\u0000\u0000\u0000\u0000\u0001\u0003\u0003\u0006"}
+```
+
 2、正常流量
 urllist.txt同上
 
@@ -145,7 +179,7 @@ urllist.txt同上
 import random
 import string
 import sys
-  
+
 prefix = sys.argv[-1] if len(sys.argv) == 2 else "test"
   
 for i in range(30):
@@ -180,6 +214,28 @@ do
     done
 done
 ```
+4)导出结果
+```bash
+for i in $(find ../ -name "*.pcap")
+do
+    echo "[*] processing: ${i##*/}"
+    bro -C -r ../${i##*/} ~/bro-scripts/entrypoint.bro
+    i=${i##*/}
+    mv tophant.icmp.log ${i%%.pcap}.icmp.json
+done
+```
+
+```json
+{"ts":1519301490.563351,"P":2,"info_message":true,"request":true,"reply":false,"error_message":false,"orig_h":"192.168.1.106","resp_h":"192.168.1.108","itype":8,"icode":0,"len":86,"hlim":64,"v6":false,"id":26341,"seq":256,"payload":"$$START$$UnY2R2RpZTVDNDFIUWd6d1hwaEZiZkJ1SzczcjJBbE5FeHRKamtMRG9xSXNWbVdjTW45UDhhMFVU\u000a"}
+{"ts":1519301490.565022,"P":2,"info_message":true,"request":false,"reply":true,"error_message":false,"orig_h":"192.168.1.106","resp_h":"192.168.1.108","itype":0,"icode":0,"len":86,"hlim":64,"v6":false,"id":26341,"seq":256,"payload":"$$START$$UnY2R2RpZTVDNDFIUWd6d1hwaEZiZkJ1SzczcjJBbE5FeHRKamtMRG9xSXNWbVdjTW45UDhhMFVU\u000a"}
+{"ts":1519301490.566186,"P":2,"info_message":true,"request":true,"reply":false,"error_message":false,"orig_h":"192.168.1.106","resp_h":"192.168.1.108","itype":8,"icode":0,"len":86,"hlim":64,"v6":false,"id":23341,"seq":256,"payload":"$$START$$UnY2R2RpZTVDNDFIUWd6d1hwaEZiZkJ1SzczcjJBbE5FeHRKamtMRG9xSXNWbVdjTW45UDhhMFVU\u000a"}
+{"ts":1519301490.566439,"P":2,"info_message":true,"request":false,"reply":true,"error_message":false,"orig_h":"192.168.1.106","resp_h":"192.168.1.108","itype":0,"icode":0,"len":86,"hlim":64,"v6":false,"id":23341,"seq":256,"payload":"$$START$$UnY2R2RpZTVDNDFIUWd6d1hwaEZiZkJ1SzczcjJBbE5FeHRKamtMRG9xSXNWbVdjTW45UDhhMFVU\u000a"}
+{"ts":1519301490.56692,"P":2,"info_message":true,"request":true,"reply":false,"error_message":false,"orig_h":"192.168.1.106","resp_h":"192.168.1.108","itype":8,"icode":0,"len":86,"hlim":64,"v6":false,"id":8227,"seq":256,"payload":"$$START$$T1p5U1k=\u000a"}
+{"ts":1519301490.56922,"P":2,"info_message":true,"request":false,"reply":true,"error_message":false,"orig_h":"192.168.1.106","resp_h":"192.168.1.108","itype":0,"icode":0,"len":86,"hlim":64,"v6":false,"id":8227,"seq":256,"payload":"$$START$$T1p5U1k=\u000a"}
+{"ts":1519301490.569721,"P":2,"info_message":true,"request":true,"reply":false,"error_message":false,"orig_h":"192.168.1.106","resp_h":"192.168.1.108","itype":8,"icode":0,"len":86,"hlim":64,"v6":false,"id":23341,"seq":256,"payload":"$$START$$T1p5U1k=\u000a"}
+{"ts":1519301490.570071,"P":2,"info_message":true,"request":false,"reply":true,"error_message":false,"orig_h":"192.168.1.106","resp_h":"192.168.1.108","itype":0,"icode":0,"len":86,"hlim":64,"v6":false,"id":23341,"seq":256,"payload":"$$START$$T1p5U1k=\u000a"}
+```
+
 
 2、正常流量
 
@@ -414,9 +470,25 @@ Proxy: ./ptunnel [-c <network device>] [-v <verbosity>] [-u] [-x password]
 -dp - 远程服务器端口
 
 
+#### 利用过程
+win server:
+ptunnel.exe -h 查看接口
+ptunnel -v 4 -c "DeviceNPF_{EED408B...}"
 
-win:
-ptunnel.exe -p 192.168.1.108 -lp 6666 -da www.91ri.org -dp 80 -v 4
+win client:
+ssh连接：
+ptunnel.exe -p 10.0.83.18 -lp 2222 -da 10.0.83.4 -dp 22 -v 4
+ssh -p 2222 -l root localhost
+
+SOCKS代理：（no done）
+ptunnel.exe -p 10.0.83.18 -lp 2222 -da 10.0.83.4 -dp 22 -v 4
+ssh -p 2222 -ND 8000 localhost
+
+3389:（no done）
+ptunnel.exe -p 10.0.83.18 -lp 1080 -da 10.0.83.20 -dp 3389 -v 4
+mstsc 192.168.72.1:1080
+
+
 
 
 
@@ -438,13 +510,53 @@ https://github.com/inquisb/icmpsh
 
 ### Hping3
 
+
+
+
+#### 安装
+
+```bash 
+git clone https://github.com/antirez/hping.git
+
+# 查看是否安装了下面两
+# libpcap-1.0.0-6.20091201git117cb5.el6.x86_64
+# libpcap-devel-1.0.0-6.20091201git117cb5.el6.x86_64
+rpm -qa| grep libpcap
+
+ln -sf /usr/include/pcap-bpf.h /usr/include/net/bpf.h
+yum -y install tcl
+yum -y install tcl-devel
+make
+make strip
+make install
+```
+
+#### 资料
+
 https://github.com/antirez/hping
+
+http://man.linuxde.net/hping3
+
+http://0daysecurity.com/articles/hping3_examples.html
 
 
 
 ### Simple ICMP Tunnel
 
 https://sourceforge.net/projects/simpleicmptunnel/?source=directory
+
+
+
+## SMURF攻击（ICMP反射攻击）
+
+
+
+
+
+
+
+
+
 
 
 

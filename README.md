@@ -44,6 +44,7 @@ Blog: martin2877.github.io
 17. http://blog.nsfocus.net/
 18. http://blog.knownsec.com/
 19. https://www.exploit-db.com
+20. http://resources.infosecinstitute.com/
 
 
 ## Article/Tools Collection
@@ -55,6 +56,7 @@ Blog: martin2877.github.io
 5. [pentest-wiki](https://github.com/nixawk/pentest-wiki)
 6. [安全加固](https://wiki.secyun.org/)
 7. [awesome-malware-analysis](https://github.com/rshipp/awesome-malware-analysis)
+8. [蒸米的文章](https://github.com/zhengmin1989/MyArticles)
 
 
 ## Spacial Article
@@ -92,4 +94,26 @@ http://403.wiki/
 
 http://kerlinglovsec.lofter.com/
 
+https://nanshihui.github.io/
 
+http://www.cnblogs.com/sevck/
+
+http://tinyfisher.github.io/
+
+http://gv7.me/
+
+## Tools
+
+[Web漏洞演练平台](https://github.com/710leo/ZVulDrill)
+
+[Scan-T](https://github.com/nanshihui/Scan-T)
+
+[DDoS Mon](https://ddosmon.net)
+
+[SshWeakPasswordAudit](https://github.com/penoxcn/SshWeakPasswordAudit)
+
+https://github.com/cuckoosandbox/cuckoo
+
+## Not so Spacial
+
+1. https://blog.netlab.360.com/
