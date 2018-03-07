@@ -1,0 +1,44 @@
+Receive Offical Rules Success 2018-03-07 19:26:24
+====================
+start search files 2018-03-07 19:26:24
+end search files 2018-03-07 19:26:24
+====================
+Now comparing emerging-web_specific_apps.rules struts
+====================
+Now read file 1 emerging-web_specific_apps.rules 2018-03-07 19:26:24
+====================
+Now read file 2 emerging-web_specific_apps.rules 2018-03-07 19:26:24
+file exist, opening : C:/Users/muhe/Desktop/links/wirte/Ali0thNotes/Protocols Security/script/suricata rules update management/emerging-web_specific_apps.rules
+====================
+start finding regex : .*struts.* ,it may spend times 2018-03-07 19:26:24
+====================
+start compare_sid  2018-03-07 19:27:11
+====================
+start compare sid_list1 to 2, sid_list1 len is 4, sid_list2 len is 5 2018-03-07 19:27:11
+====================
+local : #alert http $EXTERNAL_NET any -> $HTTP_SERVERS any (msg:"ET WEB_SPECIFIC_APPS Possible Apache Struts OGNL Expression Injection (CVE-2017-5638)"; flow:to_server,established; content:"ProcessBuilder"; http_header; content:"apache"; http_header; nocase; content:"struts"; http_header; pcre:"/^Content-Type\x3a\x20(?=[^\r\n]*?ProcessBuilder)[^\r\n]*?\.struts/Hmi"; reference:cve,2017-5638; reference:url,github.com/rapid7/metasploit-framework/issues/8064; classtype:web-application-attack; sid:2024038; rev:2;)
+
+official : alert http $EXTERNAL_NET any -> $HTTP_SERVERS any (msg:"ET WEB_SPECIFIC_APPS Possible Apache Struts OGNL Expression Injection (CVE-2017-5638)"; flow:established,to_server; content:"apache"; http_header; http_content_type; content:"ProcessBuilder"; content:".struts"; distance:0; metadata: former_category WEB_SPECIFIC_APPS; reference:cve,2017-5638; reference:url,github.com/rapid7/metasploit-framework/issues/8064; classtype:web-application-attack; sid:2024038; rev:3; metadata:affected_product Apache_Struts2, attack_target Web_Server, deployment Perimeter, signature_severity Major, created_at 2017_03_08, performance_impact Low, updated_at 2017_03_08;)
+
+====================
+local : #alert http $EXTERNAL_NET any -> $HTTP_SERVERS any (msg:"ET WEB_SPECIFIC_APPS Possible Apache Struts OGNL Expression Injection (CVE-2017-5638) M2"; flow:to_server,established; content:"Content-Type|3a|"; http_header; nocase; content:"multipart/form-data"; http_header; content:"{"; http_header; nocase; content:"}"; http_header; pcre:"/^Content-Type\x3a(?=[^\r\n]*?multipart\/form-data)[^\r\n]*?\{[^\r\n]{15,}\}/Hmi"; classtype:web-application-attack; sid:2024044; rev:3;)
+
+official : alert http $EXTERNAL_NET any -> $HTTP_SERVERS any (msg:"ET WEB_SPECIFIC_APPS Possible Apache Struts OGNL Expression Injection (CVE-2017-5638) M2"; flow:established,to_server; http_content_type; content:"multipart/form-data"; content:"{"; distance:0; content:"}"; distance:15; metadata: former_category WEB_SPECIFIC_APPS; classtype:web-application-attack; sid:2024044; rev:4; metadata:affected_product Apache_Struts2, attack_target Server, deployment Datacenter, signature_severity Major, created_at 2017_03_10, performance_impact Low, updated_at 2017_03_10;)
+
+====================
+local : #alert http $EXTERNAL_NET any -> $HTTP_SERVERS any (msg:"ET WEB_SPECIFIC_APPS Possible Apache Struts OGNL Expression Injection (CVE-2017-5638) M3"; flow:to_server,established; content:"Content-Type|3a| %{(#"; http_header; nocase; fast_pattern; content:"multipart/form-data"; http_header; classtype:web-application-attack; sid:2024045; rev:2;)
+
+official : alert http $EXTERNAL_NET any -> $HTTP_SERVERS any (msg:"ET WEB_SPECIFIC_APPS Possible Apache Struts OGNL Expression Injection (CVE-2017-5638) M3"; flow:to_server,established; content:"Content-Type|3a| %{(#"; http_header; nocase; fast_pattern; content:"multipart/form-data"; http_header; metadata: former_category WEB_SPECIFIC_APPS; classtype:web-application-attack; sid:2024045; rev:2; metadata:affected_product Apache_Struts2, attack_target Web_Server, deployment Datacenter, signature_severity Major, created_at 2017_03_13, performance_impact Low, updated_at 2017_03_13;)
+
+====================
+local : #alert http $EXTERNAL_NET any -> $HTTP_SERVERS any (msg:"ET WEB_SPECIFIC_APPS Possible Apache Struts OGNL Expression Injection (CVE-2017-5638) (Content-Disposition) M1"; flow:to_server,established; content:"Content-Disposition|3a|"; nocase; http_client_body; content:"filename"; nocase; http_client_body; pcre:"/^[^\r\n]*filename\s*=\s*[^\x3b\x3a\r\n]*[\x25\x24]\s*\{[^\r\n]{20,}\}/Pmi"; content:"multipart/form-data"; http_header; nocase; reference:url,community.hpe.com/t5/Security-Research/Struts2-046-A-new-vector/ba-p/6949723#.WNF-_kcpDUJ; classtype:web-application-attack; sid:2024096; rev:3;)
+
+official : alert http $EXTERNAL_NET any -> $HTTP_SERVERS any (msg:"ET WEB_SPECIFIC_APPS Possible Apache Struts OGNL Expression Injection (CVE-2017-5638) (Content-Disposition) M1"; flow:to_server,established; content:"Content-Disposition|3a|"; nocase; http_client_body; content:"filename"; nocase; http_client_body; pcre:"/^[^\r\n]*filename\s*=\s*[^\x3b\x3a\r\n]*[\x25\x24]\s*\{[^\r\n]{20,}\}/Pmi"; content:"multipart/form-data"; http_header; nocase; metadata: former_category WEB_SPECIFIC_APPS; reference:url,community.hpe.com/t5/Security-Research/Struts2-046-A-new-vector/ba-p/6949723#.WNF-_kcpDUJ; classtype:web-application-attack; sid:2024096; rev:3; metadata:affected_product Apache_Struts2, attack_target Web_Server, deployment Datacenter, signature_severity Major, created_at 2017_03_20, updated_at 2017_03_21;)
+
+====================
+start compare sid_list2 to 1  2018-03-07 19:27:11
+====================
+add : alert http any any -> $HTTP_SERVERS any (msg:"ET WEB_SPECIFIC_APPS OGNL Expression Injection (CVE-2017-9791)"; flow:established,to_server; content:"POST"; http_method; nocase; content:"multipart"; http_client_body; content:"form-data"; http_client_body; distance:1; within:11; content:"ognl.OgnlContext"; http_client_body; distance:1; fast_pattern; content:"DEFAULT_MEMBER_ACCESS"; http_client_body; distance:1; within:23; content:"java.lang.ProcessBuilder"; http_client_body; distance:1; content:".start"; http_client_body; distance:1; metadata: former_category WEB_SPECIFIC_APPS; reference:url,securityonline.info/tutorial-cve-2017-9791-apache-struts2-s2-048-remote-code-execution-vulnerability/; reference:cve,2017-9791; classtype:attempted-user; sid:2024468; rev:2; metadata:affected_product Apache_Struts2, attack_target Web_Server, deployment Datacenter, signature_severity Major, created_at 2017_07_14, performance_impact Low, updated_at 2017_07_14;)
+
+====================
+process end 2018-03-07 19:27:11

@@ -22,8 +22,16 @@ import time
 OFFICIAL_PATH = r'https://rules.emergingthreats.net/open/suricata-4.0/rules/' # official rules addr
 LOCAL_PATH = r"C:/Users/muhe/Desktop/links/tophant/suricata/nazgul-ids_prs2.1/rules/" # local rules path
 TEMP_PATH = r"C:/Users/muhe/Desktop/links/wirte/Ali0thNotes/Protocols Security/script/suricata rules update management/" # temp addr for file cache
+LOG_METHOD = "w"
 
 
+def write_log(content):
+    print(content)
+    global LOG_METHOD
+    with open(TEMP_PATH + "log", LOG_METHOD) as f:
+        f.write(content + "\n")
+    if LOG_METHOD == "w": # "w" first time
+        LOG_METHOD = "a"
 
 
 def get_text(path, method):
@@ -41,10 +49,10 @@ def get_text(path, method):
             temp_file_name = os.path.basename(path)
             temp_file = TEMP_PATH + temp_file_name
             if os.path.exists(temp_file):
-                print("file exist, opening : {0}".format(temp_file) )
+                write_log("file exist, opening : {0}".format(temp_file) )
                 return get_text(temp_file, 1)
             else:
-                print("downloading : {0}".format(path) )
+                write_log("downloading : {0}".format(path) )
                 file_text, is_text = get_text(path, 2)
                 with open(temp_file, "w") as f:
                     f.write(file_text)
@@ -71,7 +79,7 @@ def match_file(content):
     re = r'<a href="[^?^/].*?">(.*?)</a>'
     match = find_regex(content, re)
     if match:
-        print("Receive Offical Rules Success {0}".format(get_time()))
+        write_log("Receive Offical Rules Success {0}".format(get_time()))
         return match,True
     else:
         return [],False
@@ -89,36 +97,40 @@ def get_files(path, rules):
 
 
 def compare_files(file1, file2, regex=""):
+    """
+    if regex exists, compare text of  two files, using the regex to find the specified content first. And then compare their sid.
+    if not, compare two files by their sid.
+    """
 
     def compare_sid(content1, content2):
-        print("="*20)
-        print("start compare_sid  {0}".format(get_time()))
+        write_log("="*20)
+        write_log("start compare_sid  {0}".format(get_time()))
         re = r'sid:([0-9]*?);'
         sid_list1 = find_regex(content1, re)
         sid_list2 = find_regex(content2, re)
-        print("="*20)
-        print("start compare sid_list1 to 2, sid_list1 len is {0}, sid_list2 len is {1} {2}".format(len(sid_list1),len(sid_list2),get_time()))
+        write_log("="*20)
+        write_log("start compare sid_list1 to 2, sid_list1 len is {0}, sid_list2 len is {1} {2}".format(len(sid_list1),len(sid_list2),get_time()))
         for sid1 in sid_list1:
             if sid1 in sid_list2:
                 re = r'.*sid:{0};.*'.format(sid1)
-                print("="*20)
-                print("local : {0}\n".format(find_regex(content1, re)[0]))
-                print("official : {0}\n".format(find_regex(content2, re)[0]))
-        print("="*20)
-        print("start compare sid_list2 to 1  {0}".format(get_time()))
+                write_log("="*20)
+                write_log("local : {0}\n".format(find_regex(content1, re)[0]))
+                write_log("official : {0}\n".format(find_regex(content2, re)[0]))
+        write_log("="*20)
+        write_log("start compare sid_list2 to 1  {0}".format(get_time()))
         for sid2 in sid_list2:
             if sid2 not in sid_list1:
                 re = r'.*sid:{0};.*'.format(sid2)
-                print("="*20)
-                print("add : {0}\n".format(find_regex(content2, re)[0]))
-        print("="*20)
-        print("process end {0}".format(get_time()))
+                write_log("="*20)
+                write_log("add : {0}\n".format(find_regex(content2, re)[0]))
+        write_log("="*20)
+        write_log("process end {0}".format(get_time()))
 
 
     if regex:
         re = r'.*{0}.*'.format(regex)
-        print("="*20)
-        print("start finding regex : {0} ,it may spend times {1}".format(re , get_time()))
+        write_log("="*20)
+        write_log("start finding regex : {0} ,it may spend times {1}".format(re , get_time()))
         result1 = find_regex(file1, re)
         result2 = find_regex(file2, re)
         compare_sid('\n'.join(result1), '\n'.join(result2))
@@ -129,45 +141,45 @@ def compare_files(file1, file2, regex=""):
 def start(command = "all", command2 = ""):
     url = OFFICIAL_PATH
     official_files, is_match = match_file(get_text(url, 2))
-    print("="*20)
-    print("start search files {0}".format(get_time()))
+    write_log("="*20)
+    write_log("start search files {0}".format(get_time()))
     all_files = get_files(LOCAL_PATH, ["rules"])
-    print("end search files {0}".format(get_time()))    
+    write_log("end search files {0}".format(get_time()))    
     if is_match:
         if command == "all":
             for file_name in official_files:
                 if LOCAL_PATH + file_name in all_files:
-                    print("="*20)
-                    print("Now comparing {0}".format(file_name))
+                    write_log("="*20)
+                    write_log("Now comparing {0}".format(file_name))
                     # 读取文件内容
                     file1, is_text1 = get_text(LOCAL_PATH + file_name, 1)
                     file2, is_text2 = get_text(OFFICIAL_PATH + file_name,3)
                     if is_text1 and is_text2:
                         compare_files(file1, file2)
                     else:
-                        print("empty file")
+                        write_log("empty file")
                 else:
-                    print("="*20)
-                    print("{0} is not in local path".format(file_name))
+                    write_log("="*20)
+                    write_log("{0} is not in local path".format(file_name))
         elif LOCAL_PATH + command in all_files:
-            print("="*20)
-            print("Now comparing {0} {1}".format(command, command2))
+            write_log("="*20)
+            write_log("Now comparing {0} {1}".format(command, command2))
             # 读取文件内容
-            print("="*20)
-            print("Now read file 1 {0} {1}".format(command, get_time()))
+            write_log("="*20)
+            write_log("Now read file 1 {0} {1}".format(command, get_time()))
             file1, is_text1 = get_text(LOCAL_PATH + command, 1)
-            print("="*20)
-            print("Now read file 2 {0} {1}".format(command, get_time()))
+            write_log("="*20)
+            write_log("Now read file 2 {0} {1}".format(command, get_time()))
             file2, is_text2 = get_text(OFFICIAL_PATH + command,3)
             if is_text1 and is_text2:
                 compare_files(file1, file2, command2)
             else:
-                print("empty file")
+                write_log("empty file")
         else:
-            print("="*20)
-            print("{0} is not in local path".format(command))
+            write_log("="*20)
+            write_log("{0} is not in local path".format(command))
     else:
-        print("No official files!")
+        write_log("No official files!")
 
 
 if __name__ == '__main__':
