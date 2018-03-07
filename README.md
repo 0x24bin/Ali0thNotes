@@ -106,6 +106,7 @@ http://www.xmanblog.net/
 
 https://www.xiaoxiaowu.me/
 
+https://www.cnblogs.com/backlion
 
 ## Tools
 
@@ -118,6 +119,10 @@ https://www.xiaoxiaowu.me/
 [SshWeakPasswordAudit](https://github.com/penoxcn/SshWeakPasswordAudit)
 
 https://github.com/cuckoosandbox/cuckoo
+
+[常用的黑客神器](https://github.com/backlion/hack-for-tools)
+
+[免杀](https://github.com/backlion/secist_script)
 
 ## Not so Spacial
 

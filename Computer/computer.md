@@ -40,6 +40,9 @@ pandownload
 
 http://pandownload.com/
 
+aria2
+
+https://aria2.github.io/
 
 ## FQ
 
