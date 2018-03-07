@@ -5,7 +5,7 @@ This is the Notes of Ali0th. For more and more times I lost my data and notes, I
 
 > **Lean Life,lean Knowledge.**
 
-## Main Contents:
+## Main Contents
 
 1. Computer Daily
 2. Web Pentest
@@ -101,6 +101,11 @@ http://www.cnblogs.com/sevck/
 http://tinyfisher.github.io/
 
 http://gv7.me/
+
+http://www.xmanblog.net/
+
+https://www.xiaoxiaowu.me/
+
 
 ## Tools
 

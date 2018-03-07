@@ -18,25 +18,32 @@ dalton
 
 root/tophant@017
 
-suricata: /usr/local/bin/suricata /usr/local/etc/suricata
-
-
-
+setup: `/usr/local/bin/suricata`
 log：`/usr/local/var/log/suricata`
-
-`tail -f /usr/local/var/log/suricata/eve.json | grep ""`
-
-
-
 rules：`/usr/local/etc/suricata/rules`
 
-```bash
+```
+rules:
+suricata -r ~/Ali0th/wexin.qq.pcap -v -s ali0th.rules
 suricata -r ~/Ali0th/wexin.qq.pcap -v -c /usr/local/etc/suricata/suricata.yaml
+log：
+tail -f /usr/local/var/log/suricata/eve.json | grep ""
 ```
 
 
 
 ## 操作
+
+-r 指定pcap文件
+-c 指定yaml配置文件
+-v 详细信息
+-i 指定网口
+-s 指定rules规则文件
+-l 指定输出日志文件位置
+
+常用:
+
+
 
 分析流量：
 
@@ -46,7 +53,7 @@ suricata -r ~/Ali0th/wexin.qq.pcap -v -c /usr/local/etc/suricata/suricata.yaml
 
 `suricata -r test.pcap -l ./ -v `
 
-`suricata -r test.pcap -l ./ -v -s test.rules `
+`suricata -r test.pcap -l ./ -v -s test.rules`
 
 测试rules：
 
@@ -54,6 +61,26 @@ suricata -r ~/Ali0th/wexin.qq.pcap -v -c /usr/local/etc/suricata/suricata.yaml
 alert icmp any any -> any any (msg:"ping test";content:"|00|";classtype:protocol-command-decode;sid:222222222;rev:4;)
 ```
 
+禁用规则：
+```
+vim /etc/oinkmaster.conf
+在最后处：
+disablesid 2010495
+```
+
+通过oinkmaster修改规则：
+```
+sudo nano oinkmaster.conf
+At the part where you can modify rules, type:
+modifysid 2010495 “alert” | “drop”
+```
+
+通过yaml指定rules：
+```
+vim local.rules
+vim /etc/suricata/suricata.yaml
+suricata -c /etc/suricata/suricata.yaml -i wlan0
+```
 
 
 ## Rules
@@ -77,17 +104,29 @@ http://git.tophant.com/gaba/nazgul-ids/blob/master/suricata_sid_msg_zh_map/web_a
 
 
 
+原suricata往4.0更新流程：
+
+1.  对比原有的规则的更新
+2.  4.0新增了metadata，用python自动添加
+3.  将所有的更新保存为日志下来，然后一个个查看
+4.  测试或查看更新是否合理
+
+
+
+
+
+
 ### wexin
 
 原规则：
 
-```bash
+```s
 alert http $HOME_NET any -> $EXTERNAL_NET any (msg:"ET USER_AGENTS Suspicious User Agent (Microsoft Internet Explorer)"; flow: to_server,established; content:"Microsoft Internet Explorer"; depth:28; http_user_agent; content:!"bbc.co.uk|0d 0a|"; nocase; http_header; content:!"vmware.com|0d 0a|"; nocase; http_header; content:!"rc.itsupport247.net|0d 0a|"; nocase; http_header; content:!"msn.com|0d 0a|"; nocase; http_header; content:!"msn.es|0d 0a|"; nocase; http_header; content:!"live.com|0d 0a|"; nocase; http_header; content:!"gocyberlink.com|0d 0a|"; nocase; http_header; content:!"ultraedit.com|0d 0a|"; nocase; http_header; content:!"windowsupdate.com"; http_header; content:!"cyberlink.com"; http_header; content:!"lenovo.com"; http_header; content:!"itsupport247.net|0d 0a|"; nocase; http_header; content:!"msn.co.uk|0d 0a|"; http_header; threshold:type limit, track by_src, count 2, seconds 360; reference:url,doc.emergingthreats.net/bin/view/Main/2002400; classtype:trojan-activity; sid:2002400; rev:34;)
 ```
 
 修改后：
 
-```bash
+```s
 
 ```
 
@@ -96,6 +135,22 @@ alert http $HOME_NET any -> $EXTERNAL_NET any (msg:"ET USER_AGENTS Suspicious Us
 ### struts2
 
 
+```s
+2024468 || ET WEB_SPECIFIC_APPS OGNL Expression Injection (CVE-2017-9791) || cve,2017-9791 || url,securityonline.info/tutorial-cve-2017-9791-apache-struts2-s2-048-remote-code-execution-vulnerability/
+2024663 || ET EXPLOIT Apache Struts 2 REST Plugin XStream RCE (ProcessBuilder) || url,lgtm.com/blog/apache_struts_CVE-2017-9805_announcement || cve,2017-9805
+2024664 || ET EXPLOIT Apache Struts 2 REST Plugin XStream RCE (Runtime.Exec) || url,lgtm.com/blog/apache_struts_CVE-2017-9805_announcement || cve,2017-9805
+2024668 || ET EXPLOIT Apache Struts 2 REST Plugin ysoserial Usage (B64) 1 || url,lgtm.com/blog/apache_struts_CVE-2017-9805_announcement || cve,2017-9805
+2024669 || ET EXPLOIT Apache Struts 2 REST Plugin ysoserial Usage (B64) 2 || url,lgtm.com/blog/apache_struts_CVE-2017-9805_announcement || cve,2017-9805
+2024670 || ET EXPLOIT Apache Struts 2 REST Plugin ysoserial Usage (B64) 3 || url,lgtm.com/blog/apache_struts_CVE-2017-9805_announcement || cve,2017-9805
+2024671 || ET EXPLOIT Apache Struts 2 REST Plugin (B64) 4 || url,lgtm.com/blog/apache_struts_CVE-2017-9805_announcement || cve,2017-9805
+2024672 || ET EXPLOIT Apache Struts 2 REST Plugin (B64) 5 || url,lgtm.com/blog/apache_struts_CVE-2017-9805_announcement || cve,2017-9805
+2024673 || ET EXPLOIT Apache Struts 2 REST Plugin (B64) 6 || url,lgtm.com/blog/apache_struts_CVE-2017-9805_announcement || cve,2017-9805
+2024674 || ET EXPLOIT Apache Struts 2 REST Plugin (Runtime.Exec) || url,lgtm.com/blog/apache_struts_CVE-2017-9805_announcement || cve,2017-9805
+2024675 || ET EXPLOIT Apache Struts 2 REST Plugin (ProcessBuilder) || url,lgtm.com/blog/apache_struts_CVE-2017-9805_announcement || cve,2017-9805
+2024814 || ET EXPLOIT Likely Struts S2-053-CVE-2017-12611 Exploit Attempt M1
+2024815 || ET EXPLOIT Likely Struts S2-053-CVE-2017-12611 Exploit Attempt M2
+2024843 || ET SCAN struts-pwn User-Agent || url,paladion.net/paladion-cyber-labs-discovers-a-new-ransomware/ || cve,2017-9805 || url,github.com/mazen160/struts-pwn_CVE-2017-9805/blob/master/struts-pwn.py
+```
 
 
 
@@ -113,53 +168,25 @@ https://redmine.openinfosecfoundation.org/projects/suricata/wiki/Suricata_Instal
 
 https://github.com/OISF/suricata/blob/master/doc/userguide/install.rst
 
+### 更新 rules
+```bash
+sudo apt-get install oinkmaster
+sudo oinkmaster -C /etc/oinkmaster.conf -o /etc/suricata/rules -u https://rules.emergingthreats.net/open/suricata-4.0/emerging.rules.tar.gz
+配置新的config文件指引
+sudo nano /etc/suricata/suricata.yaml
+修改classification.config和reference.config
+```
 
 ### 配置文件
 
 /etc/suricata/suricata.yaml
 
-#### vars
-
-```yaml
-vars:
-    HOME_NET: "[192.168.122.0/24]"
-    EXTERNAL_NET: "!$HOME_NET"
-    HTTP_PORTS: "80"
-    SHELLCODE_PORTS: "!80"
-    SSH_PORTS: 22
-```
-
-`HOME_NET`变量需要指定 Suricata 检查的网络。被分配给 `EXTERNAL_NET` 变量的 `!$HOME_NET` 代表除本地网络之外的其他网络。`XXX_PORTS`变量用来辨别不同服务所用到的端口号。
-
-#### host-os-policy
-
-```yaml
-host-os-policy:
-  # These are Windows machines.
-  windows: [192.168.122.0/28, 192.168.122.155]
-  bsd: []
-  bsd-right: []
-  old-linux: []
-  # Make the default policy Linux.
-  linux: [0.0.0.0/0]
-  old-solaris: []
-  solaris: ["::1"]
-  hpux10: []
-  hpux11: []
-  irix: []
-  macos: []
-  vista: []
-  windows2k3: []
-```
-
 ### 日志文件
-
-/var/log/suricata/
-
-
-
-
-
+```
+cd /var/log/suricata
+tail -n 50 stats.log
+tail -f http.log stats.log
+```
 
 ## 资料
 
