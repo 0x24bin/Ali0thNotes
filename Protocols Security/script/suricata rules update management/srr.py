@@ -58,7 +58,7 @@ def get_text(path, method):
 
 
 def find_regex(content, regex):
-    pattern = re.compile(regex,re.I)
+    pattern = re.compile(regex, re.I)
     match = pattern.findall(str(content))
     return match
 
@@ -67,31 +67,23 @@ def get_time():
     return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 
 
-def replace_file(file1, content2):
-    """
-    Find the sid of the content2 in file1, then replace the rule of this sid.
-    """
-    re = r'sid:([0-9]*?);'
-    sid = find_regex(content2, re)[0]
-    re2 = r'.*sid:{0};.*'.format(sid)
-    rule = find_regex(file1, re2)[0]
-    return file1.replace(rule, content2)
-
-
 def add_file(file1, content2):
     """
     add rules in the end
     """
-    return file1 + content2
+    if content2 not in file1:
+        return file1 + "\n\n" + content2
+    else:
+        return file1
 
 
 def update_file(file_name, content):
-    # rename the old file
-    new_name = file_name + "." + time.strftime("%Y-%m-%d-%H:%M:%S", time.localtime()) + ".old"
+    print("renaming the old file {0}".format(get_time()))
+    new_name = file_name + "." + time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime()) + ".old"
     if not os.path.exists(LOCAL_PATH + "/old_rules/"):
         os.mkdir(LOCAL_PATH + "/old_rules/")
     shutil.copyfile(LOCAL_PATH + file_name, LOCAL_PATH + "/old_rules/" + new_name)
-    # create the new file
+    print("creating the new file {0}".format(get_time()))
     with open(LOCAL_PATH + file_name, "w") as f:
         f.write(content)
 
@@ -104,36 +96,53 @@ def read_log(content, method):
     3. read both
     """
     if method == 1:
-        re = r'official : (.*)'
-        match = find_regex(content, re)
+        regex = r'official : (.*)'
+        match = find_regex(content, regex)
         return match
     elif method == 2:
-        re = r'add : (.*)'
-        match = find_regex(content, re)
+        regex = r'add : (.*)'
+        match = find_regex(content, regex)
         return match
     elif method == 3:
-        re = r'official : (.*)|add : (.*)'
-        match = find_regex(content, re)
+        regex = r'official : (.*)|add : (.*)'
+        match = find_regex(content,regex)
         return match
 
 
 def progress(num, sum):
     rate = float(num) / float(sum)
-    print('progress : %.1f%%' % (rate * 100))
+    print('progress : %.1f%% %s' % (rate * 100, get_time()))
+
+
+def if_sid_in_line(file_list, content):
+    if content == "\n":
+        return content
+    for value in file_list:
+        sid = find_regex(value, r'sid:([0-9]*?);')[0]
+        if sid in content:
+            print("find sid line, now return : "+value)
+            return value + "\n"
+    return content
 
 
 def start(commad, command2):
+    print("="*20)
+    print("process start {0} {1} {2}".format(command, command2, get_time()))
     file1, is_text1 = get_text(LOCAL_PATH + commad, 1)
-    file2, is_text2 = get_text(LOG_PATH + command2,1)
+    file2, is_text2 = get_text(LOG_PATH + command2, 1)
     if is_text1 and is_text2:
         # replace rules
         print("start replace the rules {0}".format(get_time()))
         file2_list = read_log(file2, 1)
-        rate = 0
-        for value in file2_list:
-            file_new = replace_file(file1, value)
-            rate +=1
-            progress(rate, len(file2_list))
+        with open(LOCAL_PATH + commad, "r") as f:
+            global  file_new
+            file_new = ""
+            lines = f.readlines()
+            rate = 0
+            for line in lines:
+                rate += 1
+                progress(rate, len(lines))
+                file_new += if_sid_in_line(file2_list, line)
         # add rules
         print("start add the rules {0}".format(get_time()))
         file2_list = read_log(file2, 2)
@@ -144,7 +153,8 @@ def start(commad, command2):
             progress(rate, len(file2_list))
         # file update
         update_file(command, file_new)
-
+        print("="*20)
+        print("process end {0}".format(get_time()))
     else:
         print("empty file!")
 

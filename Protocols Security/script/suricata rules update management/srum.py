@@ -85,8 +85,8 @@ def match_file(content):
     """
     find official file
     """
-    re = r'<a href="[^?^/].*?">(.*?)</a>'
-    match = find_regex(content, re)
+    regex = r'<a href="[^?^/].*?">(.*?)</a>'
+    match = find_regex(content, regex)
     if match:
         write_log("Receive Offical Rules Success {0}".format(get_time()))
         return match,True
@@ -114,34 +114,34 @@ def compare_files(file1, file2, regex=""):
     def compare_sid(content1, content2):
         write_log("="*20)
         write_log("start compare_sid  {0}".format(get_time()))
-        re = r'sid:([0-9]*?);'
-        sid_list1 = find_regex(content1, re)
-        sid_list2 = find_regex(content2, re)
+        regex = r'sid:([0-9]*?);'
+        sid_list1 = find_regex(content1, regex)
+        sid_list2 = find_regex(content2, regex)
         write_log("="*20)
         write_log("start compare sid_list1 to 2, sid_list1 len is {0}, sid_list2 len is {1} {2}".format(len(sid_list1),len(sid_list2),get_time()))
         for sid1 in sid_list1:
             if sid1 in sid_list2:
-                re = r'.*sid:{0};.*'.format(sid1)
+                regex = r'.*sid:{0};.*'.format(sid1)
                 write_log("="*20)
-                write_log("local : {0}\n".format(find_regex(content1, re)[0]))
-                write_log("official : {0}\n".format(find_regex(content2, re)[0]))
+                write_log("local : {0}\n".format(find_regex(content1, regex)[0]))
+                write_log("official : {0}\n".format(find_regex(content2, regex)[0]))
         write_log("="*20)
         write_log("start compare sid_list2 to 1  {0}".format(get_time()))
         for sid2 in sid_list2:
             if sid2 not in sid_list1:
-                re = r'.*sid:{0};.*'.format(sid2)
+                regex = r'.*sid:{0};.*'.format(sid2)
                 write_log("="*20)
-                write_log("add : {0}\n".format(find_regex(content2, re)[0]))
+                write_log("add : {0}\n".format(find_regex(content2, regex)[0]))
         write_log("="*20)
         write_log("process end {0}".format(get_time()))
 
 
     if regex:
-        re = r'.*{0}.*'.format(regex)
+        regex = r'.*{0}.*'.format(regex)
         write_log("="*20)
-        write_log("start finding regex : {0} ,it may spend times {1}".format(re , get_time()))
-        result1 = find_regex(file1, re)
-        result2 = find_regex(file2, re)
+        write_log("start finding regex : {0} ,it may spend times {1}".format(regex , get_time()))
+        result1 = find_regex(file1, regex)
+        result2 = find_regex(file2, regex)
         compare_sid('\n'.join(result1), '\n'.join(result2))
     else:
         compare_sid(file1, file2)
