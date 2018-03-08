@@ -69,6 +69,7 @@ Blog: martin2877.github.io
 1. [Some-PoC-oR-ExP](https://github.com/coffeehb/Some-PoC-oR-ExP)
 2. [PayloadsAllTheThings](https://github.com/swisskyrepo/PayloadsAllTheThings)
 3. https://github.com/offensive-security/exploit-database
+4. https://github.com/fengxuangit/dede_exp_collect
 
 
 
@@ -111,6 +112,8 @@ https://www.cnblogs.com/backlion
 https://d0n9.github.io
 
 http://blog.fatezero.org/
+
+http://monburan.cn/
 
 ## Tools
 
