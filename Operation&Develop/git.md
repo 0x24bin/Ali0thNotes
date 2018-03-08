@@ -8,8 +8,8 @@ yum install git
 
 配置你的账户：
 ```s
-$ git config --global user.name 'runoob'
-$ git config --global user.email test@runoob.com
+git config --global user.name 'runoob'
+git config --global user.email test@runoob.com
 ```
 
 > git status（查看本地分支文件信息，确保更新时不产生冲突）
@@ -32,7 +32,23 @@ $ git config --global user.email test@runoob.com
 
 取回origin主机的master分支 : git fetch origin master
 
-合并远程分支 : $ git merge origin/master 或 $ git rebase origin/master
+
+合并master : 
+
+```
+pick：正常选中
+reword：选中，并且修改提交信息；
+edit：选中，rebase时会暂停，允许你修改这个commit（参考这里）
+squash：选中，会将当前commit与上一个commit合并
+fixup：与squash相同，但不会保存当前commit的提交信息
+exec：执行其他shell命令
+```
+
+合并远程分支 : $ git merge origin/master
+
+$ git rebase origin/master
+
+排除不合并的 : git rebase -i 123
 
 > git branch
 ```s

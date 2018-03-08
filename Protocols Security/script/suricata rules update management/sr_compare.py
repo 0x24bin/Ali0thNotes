@@ -112,6 +112,7 @@ def get_files(path, rules):
 def rename_log(file_name):
         # rename log
         shutil.copyfile(LOG_PATH + "log", LOG_PATH + file_name + ".log")
+        os.remove(LOG_PATH + "log")
 
 
 def compare_files(file1, file2, regex=""):
@@ -202,15 +203,36 @@ def start(command = "all", command2 = ""):
 
 
 if __name__ == '__main__':
-    if len(sys.argv)>1:
+    if len(sys.argv) == 1:
+        print("""
+            Suricata Rules Compare
+
+            SR_Compare is short for Suricata Rules compare, a tool to compare rules between local and official.
+
+            Author : ali0th
+            Date   : 18/3/7
+            Email  : martin2877 at foxmail.com
+
+            Usage  : python SR_Compare.py [rules file] [keyword]
+            example: 
+            
+            python SR_Compare.py emerging-web_specific_apps.rules struts
+            
+            compare all file : python SR_Compare.py all
+            
+            test : python SR_Compare.py test
+            
+            """)
+    elif len(sys.argv) == 2:
         command = sys.argv[1]
-    elif len(sys.argv)>2:
+        if command == "test":
+            print("start test using emerging-web_specific_apps.rules struts")
+            command = "emerging-web_specific_apps.rules"    ## 测试语句
+            command2 = r"struts"    ## 测试语句
+            start(command, command2)
+        elif command == "all":
+            start()
+    elif len(sys.argv) == 3:
+        command = sys.argv[1]
         command2 = sys.argv[2]
-    else:
-        command = "all"
-        command2 = ""
-
-    command = "emerging-web_specific_apps.rules"    ## 测试语句
-    command2 = r"struts"    ## 测试语句
-
-    start(command, command2)
+        start(command, command2)
