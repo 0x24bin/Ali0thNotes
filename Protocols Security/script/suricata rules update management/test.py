@@ -1,16 +1,15 @@
-import os,sys,string   
-import time
-  
-def view_bar(num=1, sum=100, bar_word=':'):
-    rate = float(num) / float(sum)
-    rate_num = int(rate * 100)
-    #print ('\r%{}:'.format(rate_num),end='\n')
-    os.write(1,bytes('\r%{}:'.format(rate_num),'gbk'))
-    for i in range(0, num):
-        os.write(1,bytes(bar_word,'gbk'))
-        sys.stdout.flush()
 
-if __name__ == '__main__':
-    for i in range(0, 100):
-        time.sleep(0.1)
-        view_bar(i, 100,':')
+import re
+TEMP_PATH = r"C:/Users/muhe/Desktop/links/wirte/Ali0thNotes/Protocols Security/script/suricata rules update management/" # temp addr for file cache
+
+def find_regex(content, regex):
+    pattern = re.compile(regex,re.I)
+    match = pattern.findall(str(content))
+    return match
+
+with open(TEMP_PATH + "emerging-web_specific_apps.rules", "r") as f:
+    regex = r"sid:([0-9]*?);.*?rev:([0-9]*?);"
+    match = find_regex(f.read(), regex)
+    # print(match)
+    for value in match:
+        print(value)

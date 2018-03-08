@@ -35,7 +35,7 @@ def write_log(content):
     global LOG_METHOD
     with open(LOG_PATH + "log", LOG_METHOD) as f:
         f.write(content + "\n")
-    if LOG_METHOD == "w": # "w" first time
+    if LOG_METHOD == "w": # "w" first time to rewrite the broken log
         LOG_METHOD = "a"
 
 
@@ -115,6 +115,15 @@ def rename_log(file_name):
         os.remove(LOG_PATH + "log")
 
 
+def cuple2list(arg_cuple):
+    list1 = []
+    list2 = []
+    for value in arg_cuple:
+        list1.append(value[0])
+        list2.append(value[1])
+    return list1, list2
+
+
 def compare_files(file1, file2, regex=""):
     """
     if regex exists, compare text of  two files, using the regex to find the specified content first. And then compare their sid.
@@ -124,21 +133,27 @@ def compare_files(file1, file2, regex=""):
     def compare_sid(content1, content2):
         write_log("="*20)
         write_log("start compare_sid  {0}".format(get_time()))
-        regex = r'sid:([0-9]*?);'
+        # get sid and rev
+        regex = r"sid:([0-9]*?);.*?rev:([0-9]*?);"
         sid_list1 = find_regex(content1, regex)
         sid_list2 = find_regex(content2, regex)
+        # compare
         write_log("="*20)
         write_log("start compare sid_list1 to 2, sid_list1 len is {0}, sid_list2 len is {1} {2}".format(len(sid_list1),len(sid_list2),get_time()))
         for sid1 in sid_list1:
-            if sid1 in sid_list2:
-                regex = r'.*sid:{0};.*'.format(sid1)
-                write_log("="*20)
-                write_log("local : {0}\n".format(find_regex(content1, regex)[0]))
-                write_log("official : {0}\n".format(find_regex(content2, regex)[0]))
+            for sid2 in sid_list2:
+                if sid1[0] == sid2[0] and sid1[1] != sid2[1]: # compare sid and rev, if rev is equal, they are same.
+                    regex = r'.*sid:{0};.*'.format(sid1[0])
+                    write_log("="*20)
+                    write_log("local : {0}\n".format(find_regex(content1, regex)[0]))
+                    write_log("official : {0}\n".format(find_regex(content2, regex)[0]))
+        # add
         write_log("="*20)
         write_log("start compare sid_list2 to 1  {0}".format(get_time()))
-        for sid2 in sid_list2:
-            if sid2 not in sid_list1:
+        sid_list1_1, nothing = cuple2list(sid_list1)
+        sid_list2_1, nothing = cuple2list(sid_list2)
+        for sid2 in sid_list2_1:
+            if sid2 not in sid_list1_1:
                 regex = r'.*sid:{0};.*'.format(sid2)
                 write_log("="*20)
                 write_log("add : {0}\n".format(find_regex(content2, regex)[0]))

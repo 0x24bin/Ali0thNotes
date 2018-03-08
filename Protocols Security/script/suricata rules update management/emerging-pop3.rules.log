@@ -1,0 +1,11 @@
+====================
+Now comparing emerging-pop3.rules
+downloading : https://rules.emergingthreats.net/open/suricata-4.0/rules/emerging-pop3.rules
+====================
+start compare_sid  2018-03-09 02:10:33
+====================
+start compare sid_list1 to 2, sid_list1 len is 20, sid_list2 len is 20 2018-03-09 02:10:33
+====================
+start compare sid_list2 to 1  2018-03-09 02:10:33
+====================
+process end 2018-03-09 02:10:33

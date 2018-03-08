@@ -1,0 +1,11 @@
+====================
+Now comparing emerging-icmp_info.rules
+downloading : https://rules.emergingthreats.net/open/suricata-4.0/rules/emerging-icmp_info.rules
+====================
+start compare_sid  2018-03-09 01:56:27
+====================
+start compare sid_list1 to 2, sid_list1 len is 66, sid_list2 len is 66 2018-03-09 01:56:27
+====================
+start compare sid_list2 to 1  2018-03-09 01:56:27
+====================
+process end 2018-03-09 01:56:27

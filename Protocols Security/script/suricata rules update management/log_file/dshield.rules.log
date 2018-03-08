@@ -1,0 +1,16 @@
+====================
+Now comparing dshield.rules
+downloading : https://rules.emergingthreats.net/open/suricata-4.0/rules/dshield.rules
+====================
+start compare_sid  2018-03-08 21:27:40
+====================
+start compare sid_list1 to 2, sid_list1 len is 1, sid_list2 len is 1 2018-03-08 21:27:40
+====================
+local : #alert ip [213.32.7.0/24,91.223.133.0/24,185.35.62.0/24,5.188.10.0/24,80.82.77.0/24,71.6.216.0/24,45.55.6.0/24,5.101.40.0/24,45.55.11.0/24,5.188.11.0/24,45.55.8.0/24,191.96.249.0/24,141.212.122.0/24,38.107.180.0/24,64.125.239.0/24,71.6.146.0/24,163.172.99.0/24,91.211.2.0/24,91.211.0.0/24,196.52.43.0/24] any -> $HOME_NET any (msg:"ET DROP Dshield Block Listed Source group 1"; reference:url,feeds.dshield.org/block.txt; threshold: type limit, track by_src, seconds 3600, count 1; classtype:misc-attack; flowbits:set,ET.Evil; flowbits:set,ET.DshieldIP; sid:2402000; rev:4490;)
+
+official : alert ip [196.52.43.0/24,191.101.167.0/24,5.188.86.0/24,181.214.87.0/24,77.72.82.0/24,212.92.127.0/24,77.72.85.0/24,85.93.20.0/24,80.82.77.0/24,180.97.106.0/24,5.188.11.0/24,89.248.168.0/24,146.0.77.0/24,89.38.99.0/24,125.212.217.0/24,208.100.26.0/24,5.188.10.0/24,141.212.122.0/24,148.153.35.0/24,58.218.213.0/24] any -> $HOME_NET any (msg:"ET DROP Dshield Block Listed Source group 1"; reference:url,feeds.dshield.org/block.txt; threshold: type limit, track by_src, seconds 3600, count 1; classtype:misc-attack; flowbits:set,ET.Evil; flowbits:set,ET.DshieldIP; sid:2402000; rev:4739;)
+
+====================
+start compare sid_list2 to 1  2018-03-08 21:27:40
+====================
+process end 2018-03-08 21:27:40

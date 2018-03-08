@@ -1,0 +1,11 @@
+====================
+Now comparing emerging-activex.rules
+file exist, opening : C:/Users/muhe/Desktop/links/wirte/Ali0thNotes/Protocols Security/script/suricata rules update management/emerging-activex.rules
+====================
+start compare_sid  2018-03-09 00:33:34
+====================
+start compare sid_list1 to 2, sid_list1 len is 533, sid_list2 len is 533 2018-03-09 00:33:34
+====================
+start compare sid_list2 to 1  2018-03-09 00:33:34
+====================
+process end 2018-03-09 00:33:34

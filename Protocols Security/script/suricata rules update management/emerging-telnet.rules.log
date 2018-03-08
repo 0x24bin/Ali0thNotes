@@ -1,0 +1,21 @@
+====================
+Now comparing emerging-telnet.rules
+downloading : https://rules.emergingthreats.net/open/suricata-4.0/rules/emerging-telnet.rules
+====================
+start compare_sid  2018-03-09 02:11:02
+====================
+start compare sid_list1 to 2, sid_list1 len is 13, sid_list2 len is 13 2018-03-09 02:11:02
+====================
+local : #alert tcp $EXTERNAL_NET any -> $HOME_NET [23,2323,3323,4323] (msg:"ET TELNET SUSPICIOUS busybox shell"; flow:to_server,established; content:"shell"; fast_pattern:only; pcre:"/\bshell\b/"; flowbits:isset,ET.telnet.busybox; flowbits:set,ET.telnet.busybox.shell;threshold: type limit, count 1, track by_src, seconds 30; reference:url,lists.emergingthreats.net/pipermail/emerging-sigs/2016-August/027524.html; classtype:attempted-admin; sid:2023017; rev:2;)
+
+official : #alert tcp $EXTERNAL_NET any -> $HOME_NET [23,2323,3323,4323] (msg:"ET TELNET SUSPICIOUS busybox shell"; flow:to_server,established; content:"shell"; fast_pattern:only; pcre:"/\bshell\b/"; flowbits:isset,ET.telnet.busybox; threshold: type limit, count 1, track by_src, seconds 30; reference:url,lists.emergingthreats.net/pipermail/emerging-sigs/2016-August/027524.html; classtype:attempted-admin; sid:2023017; rev:3; metadata:attack_target Server, deployment Datacenter, signature_severity Major, created_at 2016_08_08, performance_impact Low, updated_at 2016_08_23;)
+
+====================
+local : #alert tcp $EXTERNAL_NET any -> $HOME_NET [23,2323,3323,4323] (msg:"ET TELNET SUSPICIOUS busybox enable"; flow:to_server,established; content:"enable"; fast_pattern:only; pcre:"/\benable\b/"; flowbits:set,ET.telnet.busybox.enable; flowbits:isset,ET.telnet.busybox;threshold: type limit, count 1, track by_src, seconds 30; reference:url,lists.emergingthreats.net/pipermail/emerging-sigs/2016-August/027524.html; classtype:attempted-admin; sid:2023018; rev:3;)
+
+official : #alert tcp $EXTERNAL_NET any -> $HOME_NET [23,2323,3323,4323] (msg:"ET TELNET SUSPICIOUS busybox enable"; flow:to_server,established; content:"enable"; fast_pattern:only; pcre:"/\benable\b/"; flowbits:isset,ET.telnet.busybox; threshold: type limit, count 1, track by_src, seconds 30; reference:url,lists.emergingthreats.net/pipermail/emerging-sigs/2016-August/027524.html; classtype:attempted-admin; sid:2023018; rev:4; metadata:attack_target Server, deployment Datacenter, signature_severity Major, created_at 2016_08_08, performance_impact Low, updated_at 2016_08_23;)
+
+====================
+start compare sid_list2 to 1  2018-03-09 02:11:02
+====================
+process end 2018-03-09 02:11:02

@@ -1,0 +1,16 @@
+====================
+Now comparing emerging-games.rules
+downloading : https://rules.emergingthreats.net/open/suricata-4.0/rules/emerging-games.rules
+====================
+start compare_sid  2018-03-09 01:56:18
+====================
+start compare sid_list1 to 2, sid_list1 len is 74, sid_list2 len is 74 2018-03-09 01:56:18
+====================
+local : #alert tcp $HOME_NET any -> $EXTERNAL_NET any (msg:"ET GAMES Blizzard Web Downloader Install Detected"; flow: established,to_server; content: "User-Agent|3a| Blizzard Web Client"; nocase; classtype:policy-violation; sid:2012170; rev:2;)
+
+official : alert http $HOME_NET any -> $EXTERNAL_NET any (msg:"ET GAMES Blizzard Web Downloader Install Detected"; flow: established,to_server; content: "Blizzard Web Client"; nocase; depth:19; http_user_agent; classtype:policy-violation; sid:2012170; rev:3; metadata:created_at 2011_01_10, updated_at 2011_01_10;)
+
+====================
+start compare sid_list2 to 1  2018-03-09 01:56:18
+====================
+process end 2018-03-09 01:56:18

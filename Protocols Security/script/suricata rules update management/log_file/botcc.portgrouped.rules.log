@@ -1,7 +1,7 @@
-Receive Offical Rules Success 2018-03-09 00:21:24
+Receive Offical Rules Success 2018-03-08 21:17:52
 ====================
-start search files 2018-03-09 00:21:24
-end search files 2018-03-09 00:21:24
+start search files 2018-03-08 21:17:52
+end search files 2018-03-08 21:17:52
 ====================
 BSD-License.txt is not in local path
 ====================
@@ -10,9 +10,9 @@ LICENSE is not in local path
 Now comparing botcc.portgrouped.rules
 file exist, opening : C:/Users/muhe/Desktop/links/wirte/Ali0thNotes/Protocols Security/script/suricata rules update management/botcc.portgrouped.rules
 ====================
-start compare_sid  2018-03-09 00:21:24
+start compare_sid  2018-03-08 21:17:52
 ====================
-start compare sid_list1 to 2, sid_list1 len is 60, sid_list2 len is 196 2018-03-09 00:21:24
+start compare sid_list1 to 2, sid_list1 len is 60, sid_list2 len is 196 2018-03-08 21:17:52
 ====================
 local : #alert tcp $HOME_NET any -> 50.116.1.225 22 (msg:"ET CNC Shadowserver Reported CnC Server Port 22 Group 1"; flow:to_server,established; flags:S; reference:url,doc.emergingthreats.net/bin/view/Main/BotCC; reference:url,www.shadowserver.org; threshold: type limit, track by_src, seconds 360, count 1; classtype:trojan-activity; flowbits:set,ET.Evil; flowbits:set,ET.BotccIP; sid:2405000; rev:4670;)
 
@@ -314,7 +314,7 @@ local : #alert tcp $HOME_NET any -> 185.62.190.37 40669 (msg:"ET CNC Shadowserve
 official : alert tcp $HOME_NET any -> [94.23.180.242,185.79.248.33] 4040 (msg:"ET CNC Shadowserver Reported CnC Server Port 4040 Group 1"; flow:to_server,established; flags:S; reference:url,doc.emergingthreats.net/bin/view/Main/BotCC; reference:url,www.shadowserver.org; threshold: type limit, track by_src, seconds 360, count 1; classtype:trojan-activity; flowbits:set,ET.Evil; flowbits:set,ET.BotccIP; sid:2405059; rev:4923;)
 
 ====================
-start compare sid_list2 to 1  2018-03-09 00:22:13
+start compare sid_list2 to 1  2018-03-08 21:18:30
 ====================
 add : alert tcp $HOME_NET any -> [61.31.99.67,82.165.129.253,85.214.137.233,204.188.221.154] 4042 (msg:"ET CNC Shadowserver Reported CnC Server Port 4042 Group 1"; flow:to_server,established; flags:S; reference:url,doc.emergingthreats.net/bin/view/Main/BotCC; reference:url,www.shadowserver.org; threshold: type limit, track by_src, seconds 360, count 1; classtype:trojan-activity; flowbits:set,ET.Evil; flowbits:set,ET.BotccIP; sid:2405060; rev:4923;)
 
@@ -724,4 +724,4 @@ add : alert tcp $HOME_NET any -> 195.68.234.1 64500 (msg:"ET CNC Shadowserver Re
 add : alert tcp $HOME_NET any -> [72.252.24.14,201.208.84.79] 65267 (msg:"ET CNC Shadowserver Reported CnC Server Port 65267 Group 1"; flow:to_server,established; flags:S; reference:url,doc.emergingthreats.net/bin/view/Main/BotCC; reference:url,www.shadowserver.org; threshold: type limit, track by_src, seconds 360, count 1; classtype:trojan-activity; flowbits:set,ET.Evil; flowbits:set,ET.BotccIP; sid:2405195; rev:4923;)
 
 ====================
-process end 2018-03-09 00:23:23
+process end 2018-03-08 21:19:30

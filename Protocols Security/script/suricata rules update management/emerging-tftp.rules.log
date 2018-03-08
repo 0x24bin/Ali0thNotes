@@ -1,0 +1,19 @@
+====================
+Now comparing emerging-tftp.rules
+downloading : https://rules.emergingthreats.net/open/suricata-4.0/rules/emerging-tftp.rules
+====================
+start compare_sid  2018-03-09 02:11:03
+====================
+start compare sid_list1 to 2, sid_list1 len is 19, sid_list2 len is 20 2018-03-09 02:11:03
+====================
+local : #alert udp $HOME_NET any -> $EXTERNAL_NET 69 (msg:"ET TFTP Outbound TFTP Data Transfer with Cisco config"; content:"|00 03|"; depth:2; content:"|0a 21 0a|version|20|"; distance:2; within:12; classtype:policy-violation; sid:2015857; rev:4;)
+
+official : alert udp $HOME_NET any -> $EXTERNAL_NET 69 (msg:"ET TFTP Outbound TFTP Data Transfer with Cisco config"; content:"|00 03|"; depth:2; content:"|0a 21 20|version|20|"; distance:2; within:12; metadata: former_category TFTP; classtype:policy-violation; sid:2015857; rev:5; metadata:created_at 2012_10_31, updated_at 2017_07_19;)
+
+====================
+start compare sid_list2 to 1  2018-03-09 02:11:03
+====================
+add : alert udp $HOME_NET any -> $EXTERNAL_NET 69 (msg:"ET TFTP Outbound TFTP Data Transfer With Cisco Config 2"; content:"|00 03|"; depth:2; content:"NVRAM config last update"; distance:0; metadata: former_category TFTP; classtype:policy-violation; sid:2024481; rev:2; metadata:affected_product Cisco_ASA, affected_product Cisco_PIX, affected_product CISCO_Catalyst, attack_target Networking_Equipment, deployment Perimeter, signature_severity Major, created_at 2017_07_19, performance_impact Moderate, updated_at 2017_07_19;)
+
+====================
+process end 2018-03-09 02:11:03
