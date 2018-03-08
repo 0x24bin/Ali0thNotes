@@ -51,3 +51,10 @@ https://www.t00ls.net/members-topics-9484.html
 内网渗透常用命令
 
 https://www.t00ls.net/articles-39285.html
+
+
+如何从外部Active Directory获取域管理员权限
+
+https://www.anquanke.com/post/id/100191
+
+https://markitzeroday.com/pass-the-hash/crack-map-exec/2018/03/04/da-from-outside-the-domain.html

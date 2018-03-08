@@ -22,13 +22,14 @@ import time
 OFFICIAL_PATH = r'https://rules.emergingthreats.net/open/suricata-4.0/rules/' # official rules addr
 LOCAL_PATH = r"C:/Users/muhe/Desktop/links/tophant/suricata/nazgul-ids_prs2.1/rules/" # local rules path
 TEMP_PATH = r"C:/Users/muhe/Desktop/links/wirte/Ali0thNotes/Protocols Security/script/suricata rules update management/" # temp addr for file cache
+LOG_PATH = TEMP_PATH
 LOG_METHOD = "w"
 
 
 def write_log(content):
     print(content)
     global LOG_METHOD
-    with open(TEMP_PATH + "log", LOG_METHOD) as f:
+    with open(LOG_PATH + "log", LOG_METHOD) as f:
         f.write(content + "\n")
     if LOG_METHOD == "w": # "w" first time
         LOG_METHOD = "a"
@@ -37,6 +38,9 @@ def write_log(content):
 def get_text(path, method):
     """
     three methods to get text
+    1. open local file
+    2. requests url
+    3. read temp file first else download url
     """
     try:
         if method == 1:
@@ -45,7 +49,7 @@ def get_text(path, method):
         elif method == 2:
             r = requests.get(path, stream=True)
             return r.text, True
-        elif method == 3: # read temp file first
+        elif method == 3: 
             temp_file_name = os.path.basename(path)
             temp_file = TEMP_PATH + temp_file_name
             if os.path.exists(temp_file):
@@ -71,6 +75,11 @@ def find_regex(content, regex):
     match = pattern.findall(str(content))
     return match
 
+
+def progress(num, sum):
+    rate = float(num) / float(sum)
+    print('progress : %.2f%% \n' % (rate))
+    
 
 def match_file(content):
     """
@@ -151,7 +160,7 @@ def start(command = "all", command2 = ""):
                 if LOCAL_PATH + file_name in all_files:
                     write_log("="*20)
                     write_log("Now comparing {0}".format(file_name))
-                    # 读取文件内容
+                    # read file content
                     file1, is_text1 = get_text(LOCAL_PATH + file_name, 1)
                     file2, is_text2 = get_text(OFFICIAL_PATH + file_name,3)
                     if is_text1 and is_text2:
@@ -164,7 +173,7 @@ def start(command = "all", command2 = ""):
         elif LOCAL_PATH + command in all_files:
             write_log("="*20)
             write_log("Now comparing {0} {1}".format(command, command2))
-            # 读取文件内容
+            # read file content
             write_log("="*20)
             write_log("Now read file 1 {0} {1}".format(command, get_time()))
             file1, is_text1 = get_text(LOCAL_PATH + command, 1)

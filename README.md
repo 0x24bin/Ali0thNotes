@@ -108,6 +108,10 @@ https://www.xiaoxiaowu.me/
 
 https://www.cnblogs.com/backlion
 
+https://d0n9.github.io
+
+http://blog.fatezero.org/
+
 ## Tools
 
 [Web漏洞演练平台](https://github.com/710leo/ZVulDrill)
