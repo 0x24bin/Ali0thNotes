@@ -1,15 +1,15 @@
 # -*- coding:utf8 -*-
 """
-Suricata Rules Update Management
+Suricata Rules Compare
 
-SRUM is short for Suricata Rules Update Management , a tool to compare and update rules between local and official.
+SR_Compare is short for Suricata Rules compare, a tool to compare rules between local and official.
 
 Author : ali0th
 Date   : 18/3/7
 Email  : martin2877 at foxmail.com
 
-Usage  : python srum.py [rules file] [keyword]
-example: python srum.py emerging-web_specific_apps.rules struts
+Usage  : python SR_Compare.py [rules file] [keyword]
+example: python SR_Compare.py emerging-web_specific_apps.rules struts
 
 """
 
@@ -18,12 +18,16 @@ import re
 import os
 import sys
 import time
+import shutil
+
 
 OFFICIAL_PATH = r'https://rules.emergingthreats.net/open/suricata-4.0/rules/' # official rules addr
 LOCAL_PATH = r"C:/Users/muhe/Desktop/links/tophant/suricata/nazgul-ids_prs2.1/rules/" # local rules path
 TEMP_PATH = r"C:/Users/muhe/Desktop/links/wirte/Ali0thNotes/Protocols Security/script/suricata rules update management/" # temp addr for file cache
 LOG_PATH = TEMP_PATH
 LOG_METHOD = "w"
+TEMP_FILE = ""
+
 
 
 def write_log(content):
@@ -105,6 +109,11 @@ def get_files(path, rules):
     return all_files
 
 
+def rename_log(file_name):
+        # rename log
+        shutil.copyfile(LOG_PATH + "log", LOG_PATH + file_name + ".log")
+
+
 def compare_files(file1, file2, regex=""):
     """
     if regex exists, compare text of  two files, using the regex to find the specified content first. And then compare their sid.
@@ -135,7 +144,6 @@ def compare_files(file1, file2, regex=""):
         write_log("="*20)
         write_log("process end {0}".format(get_time()))
 
-
     if regex:
         regex = r'.*{0}.*'.format(regex)
         write_log("="*20)
@@ -165,6 +173,7 @@ def start(command = "all", command2 = ""):
                     file2, is_text2 = get_text(OFFICIAL_PATH + file_name,3)
                     if is_text1 and is_text2:
                         compare_files(file1, file2)
+                        rename_log(file_name)
                     else:
                         write_log("empty file")
                 else:
@@ -182,6 +191,7 @@ def start(command = "all", command2 = ""):
             file2, is_text2 = get_text(OFFICIAL_PATH + command,3)
             if is_text1 and is_text2:
                 compare_files(file1, file2, command2)
+                rename_log(command)
             else:
                 write_log("empty file")
         else:

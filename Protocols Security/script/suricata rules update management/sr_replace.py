@@ -2,14 +2,14 @@
 """
 Suricata Rules Replace
 
-SRR is short for Suricata Rules Replace , a tool to replace the local rules by reading log file.
+SR_Replace is short for Suricata Rules Replace , a tool to replace the local rules by reading log file.
 
 Author : ali0th
 Date   : 18/3/7
 Email  : martin2877 at foxmail.com
 
-Usage  : python srr.py [rules file] [log file]
-example: python srr.py emerging-web_specific_apps.rules log
+Usage  : python SR_Replace.py [rules file] [log file]
+example: python SR_Replace.py emerging-web_specific_apps.rules log
 
 """
 
@@ -111,7 +111,9 @@ def read_log(content, method):
 
 def progress(num, sum):
     rate = float(num) / float(sum)
+    # print("\r" + 'progress : %.1f%% %s' % (rate * 100, get_time()), end="")
     print('progress : %.1f%% %s' % (rate * 100, get_time()))
+
 
 
 def if_sid_in_line(file_list, content):
@@ -120,7 +122,7 @@ def if_sid_in_line(file_list, content):
     for value in file_list:
         sid = find_regex(value, r'sid:([0-9]*?);')[0]
         if sid in content:
-            print("find sid line, now return : "+value)
+            print("find sid line, now return {0} \n".format(value))
             return value + "\n"
     return content
 
