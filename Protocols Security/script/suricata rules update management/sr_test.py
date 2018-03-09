@@ -2,16 +2,16 @@
 """
 Suricata Rules Test
 
-SR_Test is short for Suricata Rules Test, a tool to test rules.
+SR_Test is short for Suricata Rules Test, a tool to pick up and test rules.
 
 Author : ali0th
 Date   : 18/3/9
 Email  : martin2877 at foxmail.com
 Version: 2.0
-Usage  : python SR_Test.py [rules file] [keyword]
+Usage  : python SR_Test.py <keyword|sid> [sid num list]
 example: 
-python SR_Test.py struts
-python SR_Test.py sid 12345 24567
+        python SR_Test.py struts
+        python SR_Test.py sid 12345 24567
 """
 
 import requests
@@ -21,7 +21,7 @@ import sys
 import time
 import shutil
 
-OFFICIAL_PATH = r'https://rules.emergingthreats.net/open/suricata-4.0/rules/' # official rules addr
+
 LOCAL_PATH = r"C:/Users/muhe/Desktop/links/tophant/suricata/nazgul-ids_prs2.1/rules/" # local rules path
 TEMP_PATH = r"C:/Users/muhe/Desktop/links/wirte/Ali0thNotes/Protocols Security/script/suricata rules update management/" # temp addr for file cache
 LOG_PATH = TEMP_PATH
@@ -42,6 +42,9 @@ def rename_log(file_name, endwith=".log"):
         # rename log
         shutil.copyfile(LOG_PATH + "log", LOG_PATH + file_name + endwith)
         os.remove(LOG_PATH + "log")
+
+def get_time():
+    return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 
 
 def get_text(path, method):
@@ -95,35 +98,49 @@ def get_files(path, rules):
     return all_files
 
 
+def progress(num, sum):
+    rate = float(num) / float(sum)
+    print('progress : %.1f%% %s' % (rate * 100, get_time()))
+
 
 def start(command, command2):
-    print(command,command2)
-    write_log("# ="*20)
-    write_log("# start search local files {0}".format(get_time()))
-    all_files = get_files(LOCAL_PATH, ["rules"]) 
+    write_log("#" + "="*20)
+    write_log("# start search local files by {0} {1} {2}".format(command, command2, get_time()))
+    all_files = get_files(LOCAL_PATH, ["rules"])
 
     # pick up all rules of this keyword
     if command == "keyword":
-        for file_name in all_files:
-            content, is_text = get_text(LOCAL_PATH + file_name, 1)
+        rate = 0
+        for file_path in all_files:
+            rate += 1
+            progress(rate, len(all_files))
+            content, is_text = get_text(file_path, 1)
             if is_text :
-                regex = r'.*{0}.*'.format(regex)
+                regex = r'.*{0}.*'.format(command2)
                 result = find_regex(content, regex)
                 if result:
+                    write_log("#" + "="*20)
+                    write_log("# found in files {0} {1}".format(file_path, get_time()))    
                     for value in result:
                         write_log(value)
             else:
                 write_log("# empty file")
-        rename_log(command)
+        rename_log(command2)
+
     # pick up all rules of these sids
     elif command == "sid":
-        for file_name in all_files:
-            content, is_text = get_text(LOCAL_PATH + file_name, 1)
+        rate = 0
+        for file_path in all_files:
+            rate += 1
+            progress(rate, len(all_files))
+            content, is_text = get_text(file_path, 1)
             regex = r"sid: ?([0-9]*?);"
             sid_list = find_regex(content, regex)
             for value in command2:
                 if value in sid_list:
-                    regex = r'.*sid: ?{0};.*'
+                    write_log("#" + "="*20)
+                    write_log("# found in files {0} {1}".format(file_path, get_time()))
+                    regex = r'.*sid: ?{0};.*'.format(value)
                     rule = find_regex(content, regex)[0]
                     write_log(rule)
         rename_log("sid", ".rules")
@@ -134,16 +151,17 @@ if __name__ == '__main__':
     if len(sys.argv) == 1:
         print("""
     Suricata Rules Test
-    SR_Test is short for Suricata Rules Test, a tool to test rules.
+
+    SR_Test is short for Suricata Rules Test, a tool to pick up and test rules.
 
     Author : ali0th
     Date   : 18/3/9
     Email  : martin2877 at foxmail.com
     Version: 2.0
-    Usage  : python SR_Test.py <keyword> [sid]
+    Usage  : python SR_Test.py <keyword|sid> [sid num list]
     example: 
-        python SR_Test.py struts
-        python SR_Test.py sid 12345 24567
+            python SR_Test.py struts
+            python SR_Test.py sid 12345 24567
             """)
     elif len(sys.argv) == 2:
         command = sys.argv[1]
