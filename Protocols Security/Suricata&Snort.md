@@ -94,6 +94,32 @@ tail -f http.log stats.log
 
 ## 规则更新
 
+emerging-attack_response.rules：更新与新增
+emerging-current_events.rules：更新与新增
+emerging-dns.rules：更新与新增
+emerging-exploit.rules：更新与新增
+emerging-info.rules：更新与新增
+emerging-netbios.rules：新增
+emerging-policy.rules：更新与新增
+emerging-scan.rules：更新与新增
+emerging-smtp.rules：更新
+emerging-telnet.rules：更新
+emerging-user_agents.rules：更新与新增
+emerging-web_client.rules：更新与新增
+emerging-web_server.rules：更新与新增
+emerging-rpc.rules：全文注释，没更新
+pt-rules.rules：自添加，更新与新增
+
+进度：
+emerging-web_client.rules：更新与新增
+emerging-web_server.rules：更新与新增
+pt-rules.rules：自添加，更新与新增
+
+
+
+
+
+
 
 自行编写规则的一些基础说明：
 
