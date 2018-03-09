@@ -30,6 +30,9 @@ bro开发跟进：
 
 <https://www.bro.org/sphinx/index.html#using-bro>
 
+awesome-bro
+
+https://github.com/AlkenePan/awesome-bro
 
 
 ### Bro命令

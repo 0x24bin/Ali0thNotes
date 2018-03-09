@@ -1,15 +1,14 @@
+import gzip
 
-import re
-TEMP_PATH = r"C:/Users/muhe/Desktop/links/wirte/Ali0thNotes/Protocols Security/script/suricata rules update management/" # temp addr for file cache
+TEMP_PATH = r"C:/Users/muhe/Desktop/"
 
-def find_regex(content, regex):
-    pattern = re.compile(regex,re.I)
-    match = pattern.findall(str(content))
-    return match
+def untar(fname, dirs):
+    f = gzip.open(fname, 'r')
+    print(f.filename)
+    file_content = f.read()
+    print(file_content)
+    f.close()
 
-with open(TEMP_PATH + "emerging-web_specific_apps.rules", "r") as f:
-    regex = r"sid:([0-9]*?);.*?rev:([0-9]*?);"
-    match = find_regex(f.read(), regex)
-    # print(match)
-    for value in match:
-        print(value)
+
+if __name__ == "__main__":
+    untar(TEMP_PATH + "pt.rules.tar.gz", TEMP_PATH)

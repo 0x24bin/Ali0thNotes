@@ -7,7 +7,7 @@ SR_Compare is short for Suricata Rules compare, a tool to compare rules between 
 Author : ali0th
 Date   : 18/3/7
 Email  : martin2877 at foxmail.com
-
+Version: 2.0
 Usage  : python SR_Compare.py [rules file] [keyword]
 example: python SR_Compare.py emerging-web_specific_apps.rules struts
 
@@ -22,6 +22,7 @@ import shutil
 
 
 OFFICIAL_PATH = r'https://rules.emergingthreats.net/open/suricata-4.0/rules/' # official rules addr
+PT_PATH = r'https://github.com/ptresearch/AttackDetection/blob/master/pt.rules.tar.gz' # pt rules addr
 LOCAL_PATH = r"C:/Users/muhe/Desktop/links/tophant/suricata/nazgul-ids_prs2.1/rules/" # local rules path
 TEMP_PATH = r"C:/Users/muhe/Desktop/links/wirte/Ali0thNotes/Protocols Security/script/suricata rules update management/" # temp addr for file cache
 LOG_PATH = TEMP_PATH
@@ -134,7 +135,7 @@ def compare_files(file1, file2, regex=""):
         write_log("="*20)
         write_log("start compare_sid  {0}".format(get_time()))
         # get sid and rev
-        regex = r"sid:([0-9]*?);.*?rev:([0-9]*?);"
+        regex = r"sid: ?([0-9]*?);.*?rev: ?([0-9]*?);"
         sid_list1 = find_regex(content1, regex)
         sid_list2 = find_regex(content2, regex)
         # compare
@@ -143,7 +144,7 @@ def compare_files(file1, file2, regex=""):
         for sid1 in sid_list1:
             for sid2 in sid_list2:
                 if sid1[0] == sid2[0] and sid1[1] != sid2[1]: # compare sid and rev, if rev is equal, they are same.
-                    regex = r'.*sid:{0};.*'.format(sid1[0])
+                    regex = r'.*sid: ?{0};.*'.format(sid1[0])
                     write_log("="*20)
                     write_log("local : {0}\n".format(find_regex(content1, regex)[0]))
                     write_log("official : {0}\n".format(find_regex(content2, regex)[0]))
@@ -154,7 +155,7 @@ def compare_files(file1, file2, regex=""):
         sid_list2_1, nothing = cuple2list(sid_list2)
         for sid2 in sid_list2_1:
             if sid2 not in sid_list1_1:
-                regex = r'.*sid:{0};.*'.format(sid2)
+                regex = r'.*sid: ?{0};.*'.format(sid2)
                 write_log("="*20)
                 write_log("add : {0}\n".format(find_regex(content2, regex)[0]))
         write_log("="*20)
@@ -172,71 +173,95 @@ def compare_files(file1, file2, regex=""):
 
 
 def start(command = "all", command2 = ""):
-    url = OFFICIAL_PATH
-    official_files, is_match = match_file(get_text(url, 2))
     write_log("="*20)
-    write_log("start search files {0}".format(get_time()))
-    all_files = get_files(LOCAL_PATH, ["rules"])
-    write_log("end search files {0}".format(get_time()))    
-    if is_match:
-        if command == "all":
-            for file_name in official_files:
-                if LOCAL_PATH + file_name in all_files:
-                    write_log("="*20)
-                    write_log("Now comparing {0}".format(file_name))
-                    # read file content
-                    file1, is_text1 = get_text(LOCAL_PATH + file_name, 1)
-                    file2, is_text2 = get_text(OFFICIAL_PATH + file_name,3)
-                    if is_text1 and is_text2:
-                        compare_files(file1, file2)
-                        rename_log(file_name)
-                    else:
-                        write_log("empty file")
+    write_log("start search local files {0}".format(get_time()))
+    all_files = get_files(LOCAL_PATH, ["rules"]) 
+    if command == "all":
+        write_log("="*20)
+        write_log("start search official files {0}".format(get_time()))
+        official_files, is_match = match_file(get_text(OFFICIAL_PATH, 2))
+        if not is_match:
+            write_log("No official files!")
+            return
+        for file_name in official_files:
+            if LOCAL_PATH + file_name in all_files:
+                write_log("="*20)
+                write_log("Now comparing {0}".format(file_name))
+                # read file content
+                file1, is_text1 = get_text(LOCAL_PATH + file_name, 1)
+                file2, is_text2 = get_text(OFFICIAL_PATH + file_name,3)
+                if is_text1 and is_text2:
+                    compare_files(file1, file2)
+                    rename_log(file_name)
                 else:
-                    write_log("="*20)
-                    write_log("{0} is not in local path".format(file_name))
-        elif LOCAL_PATH + command in all_files:
+                    write_log("empty file")
+            else:
+                write_log("="*20)
+                write_log("{0} is not in local path".format(file_name))
+
+    elif command != "pt" and LOCAL_PATH + command in all_files:
+        write_log("="*20)
+        write_log("Now comparing {0} {1}".format(command, command2))
+        # read file content
+        write_log("="*20)
+        write_log("Now read file 1 {0} {1}".format(command, get_time()))
+        file1, is_text1 = get_text(LOCAL_PATH + command, 1)
+        write_log("="*20)
+        write_log("Now read file 2 {0} {1}".format(command, get_time()))
+        file2, is_text2 = get_text(OFFICIAL_PATH + command,3)
+        if is_text1 and is_text2:
+            compare_files(file1, file2, command2)
+            rename_log(command)
+        else:
+            write_log("empty file")
+
+    elif command == "pt":
+        
+        # (下载tar.gz,解压它取出其中的文件，然后删除tar.gz(未实现)  # get_text(PT_PATH, 3))
+
+        commnad = "pt-rules.rules"
+        if LOCAL_PATH + commnad in all_files:
             write_log("="*20)
-            write_log("Now comparing {0} {1}".format(command, command2))
+            write_log("Now comparing {0}".format(commnad))
             # read file content
-            write_log("="*20)
-            write_log("Now read file 1 {0} {1}".format(command, get_time()))
-            file1, is_text1 = get_text(LOCAL_PATH + command, 1)
-            write_log("="*20)
-            write_log("Now read file 2 {0} {1}".format(command, get_time()))
-            file2, is_text2 = get_text(OFFICIAL_PATH + command,3)
+            file1, is_text1 = get_text(LOCAL_PATH + commnad, 1)
+            file2, is_text2 = get_text(OFFICIAL_PATH + commnad,3)
             if is_text1 and is_text2:
-                compare_files(file1, file2, command2)
-                rename_log(command)
+                compare_files(file1, file2)
+                rename_log(commnad)
             else:
                 write_log("empty file")
         else:
             write_log("="*20)
-            write_log("{0} is not in local path".format(command))
+            write_log("{0} is not in local path".format(commnad))
     else:
-        write_log("No official files!")
+        write_log("="*20)
+        write_log("{0} is not in local path".format(command))
+
 
 
 if __name__ == '__main__':
     if len(sys.argv) == 1:
         print("""
-            Suricata Rules Compare
+    Suricata Rules Compare
 
-            SR_Compare is short for Suricata Rules compare, a tool to compare rules between local and official.
+    SR_Compare is short for Suricata Rules compare, a tool to compare rules between local and official.
 
-            Author : ali0th
-            Date   : 18/3/7
-            Email  : martin2877 at foxmail.com
+    Author : ali0th
+    Date   : 18/3/7
+    Email  : martin2877 at foxmail.com
+    Version: 2.0
+    Usage  : python SR_Compare.py [rules file] [keyword]
+    example: 
+    
+    python SR_Compare.py emerging-web_specific_apps.rules struts
+    
+    compare all file : python SR_Compare.py all
 
-            Usage  : python SR_Compare.py [rules file] [keyword]
-            example: 
-            
-            python SR_Compare.py emerging-web_specific_apps.rules struts
-            
-            compare all file : python SR_Compare.py all
-            
-            test : python SR_Compare.py test
-            
+    compare pt-rules.rules : python SR_Compare.py pt
+    
+    test : python SR_Compare.py test
+
             """)
     elif len(sys.argv) == 2:
         command = sys.argv[1]
@@ -245,6 +270,8 @@ if __name__ == '__main__':
             command = "emerging-web_specific_apps.rules"    ## 测试语句
             command2 = r"struts"    ## 测试语句
             start(command, command2)
+        elif command == "pt":
+            start(command)
         elif command == "all":
             start()
     elif len(sys.argv) == 3:

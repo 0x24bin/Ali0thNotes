@@ -75,6 +75,8 @@ Blog: martin2877.github.io
 
 ## Personal Website
 
+汇总：https://www.t00ls.net/articles-40293.html
+
 http://xiaoxia.org/
 
 http://www.ebwill.com/
@@ -114,6 +116,8 @@ https://d0n9.github.io
 http://blog.fatezero.org/
 
 http://monburan.cn/
+
+https://tom0li.github.io/
 
 ## Tools
 

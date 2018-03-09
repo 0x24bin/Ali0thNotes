@@ -41,51 +41,80 @@ tail -f /usr/local/var/log/suricata/eve.json | grep ""
 -s 指定rules规则文件
 -l 指定输出日志文件位置
 
-常用:
-
-
-
-分析流量：
+### 分析流量：
 
 `sudo /usr/local/bin/suricata -c /etc/suricata/suricata.yaml -i eth0 --init-errors-fatal`
 
-分析本地的文件：
+### 分析本地的文件：
 
 `suricata -r test.pcap -l ./ -v `
 
 `suricata -r test.pcap -l ./ -v -s test.rules`
 
-测试rules：
+### 测试rules：
 
 ```s
 alert icmp any any -> any any (msg:"ping test";content:"|00|";classtype:protocol-command-decode;sid:222222222;rev:4;)
 ```
 
-禁用规则：
+### 禁用规则：
 ```
 vim /etc/oinkmaster.conf
 在最后处：
 disablesid 2010495
 ```
 
-通过oinkmaster修改规则：
+### 通过oinkmaster修改规则：
 ```
 sudo nano oinkmaster.conf
 At the part where you can modify rules, type:
 modifysid 2010495 “alert” | “drop”
 ```
 
-通过yaml指定rules：
+### 通过yaml指定rules：
 ```
 vim local.rules
 vim /etc/suricata/suricata.yaml
 suricata -c /etc/suricata/suricata.yaml -i wlan0
 ```
 
+### 查看日志文件
+```
+cd /var/log/suricata
+tail -n 50 stats.log
+tail -f http.log stats.log
+```
+
+
+
+
 
 ## Rules
 `/etc/suricata/rules`
-### 修改流程
+
+## 规则更新
+
+
+自行编写规则的一些基础说明：
+
+sid 范围： 94640000 - 94649999
+例如：94640312
+9464为标识符
+03 为类型号
+12 为规则号
+
+命名：
+英文命名通常要表达出规则要检测的漏洞或某些行为和检测哪一部分且要去除奇异
+例如：
+riskIVY-PRS VULN SQLi Boolean_inject http.request.uri
+riskIVY-PRS 为产品名称
+VULN 为大类型
+SQLi 为子类型
+Boolean_inject 为规则类型
+http.request.uri 为检测部分
+中文名称和英文名称规范一致 如果有 CVE 或 MS/S2 编号的可将编号代入中文名称中
+
+
 
 添加suricata rules流程：
 
@@ -103,8 +132,18 @@ http://git.tophant.com/gaba/nazgul-ids/raw/master/rules/sid-msg.map
 http://git.tophant.com/gaba/nazgul-ids/blob/master/suricata_sid_msg_zh_map/web_application_attack/rules.json
 
 
+选用三方的 suricata 规则：
 
-原suricata往4.0更新流程：
+et
+
+http://rules.emergingthreatspro.com/open/suricata-1.3-enhanced/
+
+pt
+
+https://github.com/ptresearch/AttackDetection
+
+
+suricata规则更新流程：
 
 1.  对比原有的规则的更新
 2.  4.0新增了metadata，用python自动添加
@@ -112,8 +151,21 @@ http://git.tophant.com/gaba/nazgul-ids/blob/master/suricata_sid_msg_zh_map/web_a
 4.  测试或查看更新是否合理
 
 
+1. 
 
 
+
+
+
+
+### 更新 rules
+```bash
+sudo apt-get install oinkmaster
+sudo oinkmaster -C /etc/oinkmaster.conf -o /etc/suricata/rules -u https://rules.emergingthreats.net/open/suricata-4.0/emerging.rules.tar.gz
+配置新的config文件指引
+sudo nano /etc/suricata/suricata.yaml
+修改classification.config和reference.config
+```
 
 
 ### wexin
@@ -132,61 +184,13 @@ alert http $HOME_NET any -> $EXTERNAL_NET any (msg:"ET USER_AGENTS Suspicious Us
 
 
 
-### struts2
-
-
-```s
-2024468 || ET WEB_SPECIFIC_APPS OGNL Expression Injection (CVE-2017-9791) || cve,2017-9791 || url,securityonline.info/tutorial-cve-2017-9791-apache-struts2-s2-048-remote-code-execution-vulnerability/
-2024663 || ET EXPLOIT Apache Struts 2 REST Plugin XStream RCE (ProcessBuilder) || url,lgtm.com/blog/apache_struts_CVE-2017-9805_announcement || cve,2017-9805
-2024664 || ET EXPLOIT Apache Struts 2 REST Plugin XStream RCE (Runtime.Exec) || url,lgtm.com/blog/apache_struts_CVE-2017-9805_announcement || cve,2017-9805
-2024668 || ET EXPLOIT Apache Struts 2 REST Plugin ysoserial Usage (B64) 1 || url,lgtm.com/blog/apache_struts_CVE-2017-9805_announcement || cve,2017-9805
-2024669 || ET EXPLOIT Apache Struts 2 REST Plugin ysoserial Usage (B64) 2 || url,lgtm.com/blog/apache_struts_CVE-2017-9805_announcement || cve,2017-9805
-2024670 || ET EXPLOIT Apache Struts 2 REST Plugin ysoserial Usage (B64) 3 || url,lgtm.com/blog/apache_struts_CVE-2017-9805_announcement || cve,2017-9805
-2024671 || ET EXPLOIT Apache Struts 2 REST Plugin (B64) 4 || url,lgtm.com/blog/apache_struts_CVE-2017-9805_announcement || cve,2017-9805
-2024672 || ET EXPLOIT Apache Struts 2 REST Plugin (B64) 5 || url,lgtm.com/blog/apache_struts_CVE-2017-9805_announcement || cve,2017-9805
-2024673 || ET EXPLOIT Apache Struts 2 REST Plugin (B64) 6 || url,lgtm.com/blog/apache_struts_CVE-2017-9805_announcement || cve,2017-9805
-2024674 || ET EXPLOIT Apache Struts 2 REST Plugin (Runtime.Exec) || url,lgtm.com/blog/apache_struts_CVE-2017-9805_announcement || cve,2017-9805
-2024675 || ET EXPLOIT Apache Struts 2 REST Plugin (ProcessBuilder) || url,lgtm.com/blog/apache_struts_CVE-2017-9805_announcement || cve,2017-9805
-2024814 || ET EXPLOIT Likely Struts S2-053-CVE-2017-12611 Exploit Attempt M1
-2024815 || ET EXPLOIT Likely Struts S2-053-CVE-2017-12611 Exploit Attempt M2
-2024843 || ET SCAN struts-pwn User-Agent || url,paladion.net/paladion-cyber-labs-discovers-a-new-ransomware/ || cve,2017-9805 || url,github.com/mazen160/struts-pwn_CVE-2017-9805/blob/master/struts-pwn.py
-```
-
-
-
-
-
-
-
-
-
-
-
 ## 安装
 
 https://redmine.openinfosecfoundation.org/projects/suricata/wiki/Suricata_Installation
 
 https://github.com/OISF/suricata/blob/master/doc/userguide/install.rst
 
-### 更新 rules
-```bash
-sudo apt-get install oinkmaster
-sudo oinkmaster -C /etc/oinkmaster.conf -o /etc/suricata/rules -u https://rules.emergingthreats.net/open/suricata-4.0/emerging.rules.tar.gz
-配置新的config文件指引
-sudo nano /etc/suricata/suricata.yaml
-修改classification.config和reference.config
-```
 
-### 配置文件
-
-/etc/suricata/suricata.yaml
-
-### 日志文件
-```
-cd /var/log/suricata
-tail -n 50 stats.log
-tail -f http.log stats.log
-```
 
 ## 资料
 
@@ -202,6 +206,7 @@ https://linux.cn/article-6985-1.html
 
 https://redmine.openinfosecfoundation.org/projects/suricata/wiki
 
+明翼
 
 https://www.jianshu.com/u/fa9c93b81e43
 
@@ -209,8 +214,9 @@ Suricata规则编写——常用关键字
 
 http://blog.csdn.net/wuyangbotianshi/article/details/44775181
 
+gaba
 
-
+https://github.com/AlkenePan?tab=repositories
 
 
 
