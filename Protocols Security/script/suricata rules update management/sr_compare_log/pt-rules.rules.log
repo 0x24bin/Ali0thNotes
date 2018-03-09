@@ -127,7 +127,7 @@ add : alert udp any 53 -> $HOME_NET any (msg: "[PT OPEN] DNS Rebinding attack in
 add : alert udp any 53 -> $HOME_NET any (msg: "[PT OPEN] DNS Rebinding attack in progress"; flow: established, from_server; content: "|00 01 00 01|"; offset: 4; depth: 4; content: "|00 01 00 01 00 00 00 00 00 04 7F 00 00 01|"; distance: 0; xbits: isset, DNSREBINDING.NON_LOCALHOST, track ip_pair; threshold: type both, track by_src, count 1, seconds 30; classtype: attempted-admin; sid: 10002489; rev: 1; )
 
 ====================
-add : alert udp any 53 -> $HOME_NET any (msg: "[PT OPEN] Possible DNS Rebinding attack"; flow: established, from_server; content: "|00 01 00 01|"; offset: 4; depth: 4; content: "|00 01 00 01 00 00 00 00 00 04 7F 00 00 01|"; distance: 0; threshold: type both, track by_src, count 1, seconds 30; classtype: attempted-admin; sid: 10002490; rev: 1; )
+add : alert udp any 53 -> $HOME_NET any (msg: "[PT OPEN] P      ossible DNS Rebinding attack"; flow: established, from_server; content: "|00 01 00 01|"; offset: 4; depth: 4; content: "|00 01 00 01 00 00 00 00 00 04 7F 00 00 01|"; distance: 0; threshold: type both, track by_src, count 1, seconds 30; classtype: attempted-admin; sid: 10002490; rev: 1; )
 
 ====================
 add : alert http any any -> $HOME_NET any (msg: "[PT ATTACK] GitHub Electron <1.8.2-beta.4, <1.7.11, <1.6.16 protocol handler RCE (CVE-2018-1000006)"; flow: established, from_server; content: "://"; content: "--gpu-launcher="; nocase; pcre: "/(powershell|cmd|python|bash|\.exe)/i"; reference: cve, 2018-1000006; reference: url, electronjs.org/blog/protocol-handler-fix; classtype: attempted-admin; sid: 10002500; rev: 2; )

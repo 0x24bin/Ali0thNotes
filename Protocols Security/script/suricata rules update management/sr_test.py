@@ -12,6 +12,7 @@ Usage  : python SR_Test.py <keyword|sid> [sid num list]
 example: 
         python SR_Test.py struts
         python SR_Test.py sid 12345 24567
+        python SR_Test.py log pt-rules.rules.log
 """
 
 import requests
@@ -103,6 +104,33 @@ def progress(num, sum):
     print('progress : %.1f%% %s' % (rate * 100, get_time()))
 
 
+def read_log(content, method):
+    """
+    method:
+    1. read official rule
+    2. read add rule
+    3. read both
+    """
+    if method == 1:
+        regex = r'official : (.*)'
+        match = find_regex(content, regex)
+        return match
+    elif method == 2:
+        regex = r'add : (.*)'
+        match = find_regex(content, regex)
+        return match
+    elif method == 3:
+        regex = r'official : (.*)\n|add : (.*)\n'
+        match = find_regex(content, regex)
+        match_list = []
+        for arg_tuple in match:
+            if arg_tuple[0] == "":
+                arg_tuple_str = match_list.append(arg_tuple[1])
+            else:
+                arg_tuple_str = match_list.append(arg_tuple[0])
+        return match_list
+
+
 def start(command, command2):
     write_log("#" + "="*20)
     write_log("# start search local files by {0} {1} {2}".format(command, command2, get_time()))
@@ -125,7 +153,7 @@ def start(command, command2):
                         write_log(value)
             else:
                 write_log("# empty file")
-        rename_log(command2)
+        rename_log(command2, ".rules")
 
     # pick up all rules of these sids
     elif command == "sid":
@@ -145,6 +173,14 @@ def start(command, command2):
                     write_log(rule)
         rename_log("sid", ".rules")
 
+    # pick up all rules of a log file
+    elif command == "log":
+        content, is_text = get_text(command2, 1)
+        if is_text:
+            rule_list = read_log(content, 3)
+            for value in rule_list:
+                write_log(value + "\n")
+        rename_log(command2, ".rules")
 
 
 if __name__ == '__main__':
@@ -162,6 +198,7 @@ if __name__ == '__main__':
     example: 
             python SR_Test.py struts
             python SR_Test.py sid 12345 24567
+            python SR_Test.py log pt-rules.rules.log
             """)
     elif len(sys.argv) == 2:
         command = sys.argv[1]
@@ -171,3 +208,5 @@ if __name__ == '__main__':
         for argv in sys.argv[2:]:
             arg_list.append(argv)
         start(sys.argv[1], arg_list)
+    elif len(sys.argv) > 2 and sys.argv[1] == "log":
+        start(sys.argv[1], sys.argv[2])
