@@ -40,6 +40,12 @@ def write_log(content):
         LOG_METHOD = "a"
 
 
+def rename_log(file_name, endwith=".log"):
+        # rename log
+        shutil.copyfile(LOG_PATH + "log", LOG_PATH + file_name + endwith)
+        os.remove(LOG_PATH + "log")
+
+
 def get_text(path, method):
     """
     three methods to get text
@@ -49,8 +55,11 @@ def get_text(path, method):
     """
     try:
         if method == 1:
-            with open(path) as f:
-                return f.read(), True
+            if os.path.exists(path):
+                with open(path) as f:
+                    return f.read(), True
+            else:
+                return [], False
         elif method == 2:
             r = requests.get(path, stream=True)
             return r.text, True
@@ -110,10 +119,7 @@ def get_files(path, rules):
     return all_files
 
 
-def rename_log(file_name):
-        # rename log
-        shutil.copyfile(LOG_PATH + "log", LOG_PATH + file_name + ".log")
-        os.remove(LOG_PATH + "log")
+
 
 
 def cuple2list(arg_cuple):
