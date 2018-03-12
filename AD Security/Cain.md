@@ -1,0 +1,62 @@
+
+
+## cain
+
+
+使用cain过一段时间后如果要重新sniffe+arp需要在arp选项卡下重新扫描网络,重新设置arp欺骗时伪造的ip,然后再打开arp欺
+骗开关,否则如果有机器重启后ip发生变化则不能欺骗到变化了ip的机器.另外实施arp欺骗时如果设置伪造ip为路由器所在
+ip[eg.192.168.1.1]容易造成网络堵塞,造成内网无法访问互联网,也难以嗅探到密码,一般可将伪造ip设置为内网的非路由器的
+如mysql,mssql,imap,pop3,smtp等服务器的ip
+
+一般在访问一个https网站时经常出现说这个网站出错了,需要将url添加到信任才可访问,这种情况很有可能就是由于目标服务
+器所在网络被sniffe+arp欺骗了,由cain在中间提供并非官方的cert证书,浏览器检测到cert异常才会提示网站访问出错,需要添
+加信任才可访问.
+
+
+
+## cain口令整理脚本
+
+```
+cain嗅探到的口令存放在cain目录下的lst文件中,包括pop3.lst,http.lst,smtp.lst,imap.lst,ftp.lst...等,脚本用法如下:
+eg.
+    用法1:
+        python3 getCainKey.py pop3.lst
+    用法2:
+        from exp10it import getCainKey
+        getCainKey(lstFile)
+
+在同目录下生成pop3.lst-cainOutPut.txt为整理后的结果
+```
+
+
+```python
+#参数为文件名
+#也即cain目录下的.lst文件[pop3.lst,http.lst,smtp.lst,imap.lst,ftp.lst,...等包含用户名口令的文件]
+#效果为在程序当前目录下生成一个xxx-cainOutPut.txt为整理后的文件
+import re
+import sys
+with open(sys.argv[1],"r+") as f:
+    allLines=f.readlines()
+AddedLines=[]
+for eachLine in allLines:    
+    #a=re.search(r"[\S]+\s+-\s+[\S]+\s+[\S]+\s+[\S]+\s+([\S]+)\s+([\S]+)\s+[\S]+\s",eachLine,re.I)
+    a=re.search(r"[\S]+\s+-\s+[\S]+\s+[\S]+\s+[\S]+\s+([\S]+)\s+([\S]+).*\s",eachLine,re.I)
+    if a:
+        userField=a.group(1)
+        passField=a.group(2)
+        string2write=userField+":"+passField+"\n"
+        print(string2write)
+        if string2write not in AddedLines:
+            shouldWrite=1
+            for each in AddedLines:
+                if each[:len(userField)]!=userField: 
+                    continue
+                else:
+                    if passField==each.split(":")[1][:-1]:
+                        shouldWrite=0
+                    break
+            if shouldWrite==1:
+                AddedLines.append(string2write)
+                with open(sys.argv[1]+"-cainOutPut.txt","a+") as f:
+                    f.write(string2write)
+```

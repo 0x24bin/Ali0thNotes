@@ -35,19 +35,13 @@
 6. [安全加固](https://wiki.secyun.org/)
 7. [awesome-malware-analysis](https://github.com/rshipp/awesome-malware-analysis)
 8. [蒸米的文章](https://github.com/zhengmin1989/MyArticles)
-
+9. [一叶知安](https://zhuanlan.zhihu.com/leafsec)
 
 ## Spacial Article
 
 1. [从零开始内网渗透学习](https://github.com/l3m0n/pentest_study)
 
 
-## POC/EXP
-
-1. [Some-PoC-oR-ExP](https://github.com/coffeehb/Some-PoC-oR-ExP)
-2. [PayloadsAllTheThings](https://github.com/swisskyrepo/PayloadsAllTheThings)
-3. https://github.com/offensive-security/exploit-database
-4. https://github.com/fengxuangit/dede_exp_collect
 
 
 
@@ -101,6 +95,10 @@ http://www.wwwer.net/
 
 http://3xp10it.cc/
 
+http://www.cnblogs.com/LittleHann/
+
+http://chybeta.club/
+
 ## Tools
 
 [Web漏洞演练平台](https://github.com/710leo/ZVulDrill)
@@ -108,6 +106,8 @@ http://3xp10it.cc/
 [Scan-T](https://github.com/nanshihui/Scan-T)
 
 [DDoS Mon](https://ddosmon.net)
+
+[The World's Largest Repository of historical DNS data](https://dnstrails.com/)
 
 [SshWeakPasswordAudit](https://github.com/penoxcn/SshWeakPasswordAudit)
 

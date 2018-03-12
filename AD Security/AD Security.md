@@ -58,3 +58,7 @@ https://www.t00ls.net/articles-39285.html
 https://www.anquanke.com/post/id/100191
 
 https://markitzeroday.com/pass-the-hash/crack-map-exec/2018/03/04/da-from-outside-the-domain.html
+
+Inside network in workgroup
+
+http://3xp10it.cc/web/2016/04/10/windows-2003-inside-network-aspx/
