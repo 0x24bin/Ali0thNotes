@@ -24,8 +24,6 @@ TEMP_PATH = r"C:/Users/muhe/Desktop/links/wirte/Ali0thNotes/Protocols Security/s
 LOG_PATH = TEMP_PATH
 
 
-
-
 def get_text(path, method):
     """
     three methods to get text
@@ -35,19 +33,24 @@ def get_text(path, method):
     """
     try:
         if method == 1:
-            with open(path) as f:
-                return f.read(), True
+            if os.path.exists(path):
+                with open(path) as f:
+                    return f.read(), True
+            else:
+                return [], False
         elif method == 2:
             r = requests.get(path, stream=True)
             return r.text, True
         elif method == 3: 
             temp_file_name = os.path.basename(path)
+            if not os.path.exists(TEMP_PATH):
+                os.mkdir(TEMP_PATH)
             temp_file = TEMP_PATH + temp_file_name
             if os.path.exists(temp_file):
-                print("file exist, opening : {0}".format(temp_file) )
+                write_log("file exist, opening : {0}".format(temp_file) )
                 return get_text(temp_file, 1)
             else:
-                print("downloading : {0}".format(path) )
+                write_log("downloading : {0}".format(path) )
                 file_text, is_text = get_text(path, 2)
                 with open(temp_file, "w") as f:
                     f.write(file_text)

@@ -33,6 +33,8 @@ TEMP_FILE = ""
 def write_log(content):
     print(content)
     global LOG_METHOD
+    if not os.path.exists(LOG_PATH):
+        os.mkdir(LOG_PATH)
     with open(LOG_PATH + "log", LOG_METHOD) as f:
         f.write(content + "\n")
     if LOG_METHOD == "w": # "w" first time to rewrite the broken log
@@ -67,12 +69,14 @@ def get_text(path, method):
             return r.text, True
         elif method == 3: 
             temp_file_name = os.path.basename(path)
+            if not os.path.exists(TEMP_PATH):
+                os.mkdir(TEMP_PATH)
             temp_file = TEMP_PATH + temp_file_name
             if os.path.exists(temp_file):
-                write_log("# file exist, opening : {0}".format(temp_file) )
+                write_log("file exist, opening : {0}".format(temp_file) )
                 return get_text(temp_file, 1)
             else:
-                write_log("# downloading : {0}".format(path) )
+                write_log("downloading : {0}".format(path) )
                 file_text, is_text = get_text(path, 2)
                 with open(temp_file, "w") as f:
                     f.write(file_text)

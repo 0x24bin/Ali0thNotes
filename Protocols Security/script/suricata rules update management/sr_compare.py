@@ -30,10 +30,11 @@ LOG_METHOD = "w"
 TEMP_FILE = ""
 
 
-
 def write_log(content):
     print(content)
     global LOG_METHOD
+    if not os.path.exists(LOG_PATH):
+        os.mkdir(LOG_PATH)
     with open(LOG_PATH + "log", LOG_METHOD) as f:
         f.write(content + "\n")
     if LOG_METHOD == "w": # "w" first time to rewrite the broken log
@@ -61,10 +62,12 @@ def get_text(path, method):
             else:
                 return [], False
         elif method == 2:
-            r = requests.get(path, stream=True)
+            r = requests.get(path)
             return r.text, True
         elif method == 3: 
             temp_file_name = os.path.basename(path)
+            if not os.path.exists(TEMP_PATH):
+                os.mkdir(TEMP_PATH)
             temp_file = TEMP_PATH + temp_file_name
             if os.path.exists(temp_file):
                 write_log("file exist, opening : {0}".format(temp_file) )
@@ -200,7 +203,7 @@ def start(command = "all", command2 = ""):
                     compare_files(file1, file2)
                     rename_log(file_name)
                 else:
-                    write_log("empty file")
+                    write_log("empty file : file1 {0} file2 {1}".format(is_text1, is_text2))
             else:
                 write_log("="*20)
                 write_log("{0} is not in local path".format(file_name))
@@ -219,7 +222,7 @@ def start(command = "all", command2 = ""):
             compare_files(file1, file2, command2)
             rename_log(command)
         else:
-            write_log("empty file")
+            write_log("empty file : file1 {0} file2 {1}".format(is_text1, is_text2))
 
     elif command == "pt":
         
@@ -236,7 +239,7 @@ def start(command = "all", command2 = ""):
                 compare_files(file1, file2)
                 rename_log(commnad)
             else:
-                write_log("empty file")
+                write_log("empty file : file1 {0} file2 {1}".format(is_text1, is_text2))
         else:
             write_log("="*20)
             write_log("{0} is not in local path".format(commnad))

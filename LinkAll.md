@@ -22,7 +22,8 @@
 18. http://blog.knownsec.com/
 19. https://www.exploit-db.com
 20. http://resources.infosecinstitute.com/
-
+21. https://pentest.blog/
+22. https://blogs.securiteam.com/
 
 ## Article/Tools Collection
 
@@ -97,6 +98,8 @@ http://monburan.cn/
 https://tom0li.github.io/
 
 http://www.wwwer.net/
+
+http://3xp10it.cc/
 
 ## Tools
 
