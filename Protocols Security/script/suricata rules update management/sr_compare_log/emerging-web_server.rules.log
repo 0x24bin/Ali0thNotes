@@ -62,9 +62,8 @@ add : #alert http $EXTERNAL_NET any -> $HTTP_SERVERS any (msg:"ET WEB_SERVER Pos
 
 ====================
 add : alert http $HTTP_SERVERS any -> $EXTERNAL_NET any (msg:"ET WEB_SERVER OptionsBleed (CVE-2017-9798)"; flow:from_server; content:"Allow|3a 20|"; http_header; pcre:"/^[^\n]+(?:[^ -~\x0d\x0a]|,\x20*,)/HR"; metadata: former_category WEB_SERVER; reference:cve,CVE-2017-9798; classtype:misc-activity; sid:2024760; rev:4; metadata:affected_product Apache_HTTP_server, attack_target Server, deployment Datacenter, signature_severity Minor, created_at 2017_09_19, performance_impact Significant, updated_at 2017_09_22;)
-with wget in body"; flow:established,to_server; content:"wget"; nocase; http_client_body; content:"http"; nocase; http_client_body; within:11; threshold:type limit, track by_src, seconds 3600, count 1; metadata: former_category WEB_SERVER; classtype:web-application-attack; sid:2024930; rev:1; metadata:affected_product Apache_HTTP_server, attack_target Server, deployment Datacenter, signature_severity Major, created_at 2017_10_26, malware_family webshell, performance_impact Moderate, updated_at 2017_10_26;)
 
 ====================
-add : alert http $EXTERNAL_NET any -> $HTTP_SERVERS any (msg:"ET WEB_SERVER 401TRG Generic Webshell Request - POST 
+add : alert http $EXTERNAL_NET any -> $HTTP_SERVERS any (msg:"ET WEB_SERVER 401TRG Generic Webshell Request - POST with wget in body"; flow:established,to_server; content:"wget"; nocase; http_client_body; content:"http"; nocase; http_client_body; within:11; threshold:type limit, track by_src, seconds 3600, count 1; metadata: former_category WEB_SERVER; classtype:web-application-attack; sid:2024930; rev:1; metadata:affected_product Apache_HTTP_server, attack_target Server, deployment Datacenter, signature_severity Major, created_at 2017_10_26, malware_family webshell, performance_impact Moderate, updated_at 2017_10_26;)
 ====================
 process end 2018-03-09 02:15:47

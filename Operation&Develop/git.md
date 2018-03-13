@@ -14,7 +14,6 @@ git status　查看状态
 git add　增加要commit的文件
 git commit -m "update" 提交到本地仓库
 git push 提交到线上仓库
-
 ```
 
 配置你的账户：

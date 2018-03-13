@@ -26,8 +26,14 @@ rules：`/usr/local/etc/suricata/rules`
 rules:
 suricata -r ~/Ali0th/wexin.qq.pcap -v -s ali0th.rules
 suricata -r ~/Ali0th/wexin.qq.pcap -v -c /usr/local/etc/suricata/suricata.yaml
+
+要同时指定yaml和rules文件，这时就只加载这个rules文件
+suricata -i ens33 -v -c suricata.yaml -s pt-rules.rules.log.rules 
+
 log：
 tail -f /usr/local/var/log/suricata/eve.json | grep ""
+tail -f var/log/suricata/eve.json | grep ""
+
 ```
 
 
