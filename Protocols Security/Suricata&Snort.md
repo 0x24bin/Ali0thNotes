@@ -111,10 +111,8 @@ emerging-scan.rules：更新与新增
 emerging-smtp.rules：更新
 emerging-telnet.rules：更新
 emerging-user_agents.rules：更新与新增
-emerging-web_client.rules：更新与新增
-emerging-web_server.rules：更新与新增
 emerging-rpc.rules：全文注释，没更新
-pt-rules.rules：自添加，更新与新增
+
 
 进度：
 emerging-web_client.rules：更新与新增

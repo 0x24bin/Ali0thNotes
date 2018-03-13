@@ -36,6 +36,8 @@
 7. [awesome-malware-analysis](https://github.com/rshipp/awesome-malware-analysis)
 8. [蒸米的文章](https://github.com/zhengmin1989/MyArticles)
 9. [一叶知安](https://zhuanlan.zhihu.com/leafsec)
+10. [玄武实验室](http://xlab.tencent.com/cn/)
+11. [401trg](https://401trg.pw/)
 
 ## Spacial Article
 
@@ -100,6 +102,14 @@ http://www.cnblogs.com/LittleHann/
 http://chybeta.club/
 
 https://www.s0nnet.com/
+
+https://blahcat.github.io/
+
+http://defensecode.com/whitepapers.php
+
+http://www.skepticism.us/
+
+
 
 
 ## Tools
