@@ -1,15 +1,18 @@
 # -*- coding:utf8 -*-
 """
-Suricata Rules Replace
+    Suricata Rules Replace
 
-SR_Replace is short for Suricata Rules Replace , a tool to replace the local rules by reading log file.
+    SR_Replace is short for Suricata Rules Replace , a tool to replace the local rules by reading log file.
 
-Author : ali0th
-Date   : 18/3/7
-Email  : martin2877 at foxmail.com
+    Author : ali0th
+    Date   : 18/3/7
+    Email  : martin2877 at foxmail.com
 
-Usage  : python SR_Replace.py [rules file] [log file]
-example: python SR_Replace.py emerging-web_specific_apps.rules log
+    Usage  : python SR_Replace.py [rules file] [log file]
+    example: 
+             python SR_Replace.py test
+             python SR_Replace.py all
+             python SR_Replace.py emerging-web_server.rules emerging-web_server.rules.log
 
 """
 
@@ -20,7 +23,7 @@ import time
 import shutil
 
 LOCAL_PATH = r"C:/Users/muhe/Desktop/links/tophant/suricata/nazgul-ids_prs2.1/rules/" # local rules path
-TEMP_PATH = r"C:/Users/muhe/Desktop/links/wirte/Ali0thNotes/Protocols Security/script/suricata rules update management/" # temp addr for file cache
+TEMP_PATH = r"C:/Users/muhe/Desktop/links/wirte/Ali0thNotes/Protocols Security/script/suricata rules update management/newlog/" # temp addr for file cache
 LOG_PATH = TEMP_PATH
 
 
@@ -34,7 +37,7 @@ def get_text(path, method):
     try:
         if method == 1:
             if os.path.exists(path):
-                with open(path) as f:
+                with open(path, "r", encoding="utf8") as f:
                     return f.read(), True
             else:
                 return [], False
@@ -47,16 +50,17 @@ def get_text(path, method):
                 os.mkdir(TEMP_PATH)
             temp_file = TEMP_PATH + temp_file_name
             if os.path.exists(temp_file):
-                write_log("file exist, opening : {0}".format(temp_file) )
+                print("file exist, opening : {0}".format(temp_file) )
                 return get_text(temp_file, 1)
             else:
-                write_log("downloading : {0}".format(path) )
+                print("downloading : {0}".format(path) )
                 file_text, is_text = get_text(path, 2)
                 with open(temp_file, "w") as f:
                     f.write(file_text)
                 return file_text, True
 
     except Exception as e:
+        print(e)
         return e, False
 
 
@@ -68,6 +72,17 @@ def find_regex(content, regex):
 
 def get_time():
     return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+
+
+def get_files(path, rules):
+    all_files = []
+    for fpath, dirname, fnames in os.walk(path):   # os.walk是获取所有的目录
+        for filename in fnames:
+            path_name = os.path.join(fpath,filename)
+            for value in rules:
+                if path_name.endswith(value): # 判断是否是"xxx"结尾
+                    all_files.append(path_name)
+    return all_files
 
 
 def add_file(file1, content2):
@@ -118,7 +133,6 @@ def progress(num, sum):
     print('progress : %.1f%% %s' % (rate * 100, get_time()))
 
 
-
 def if_sid_in_line(file_list, content):
     if content == "\n":
         return content
@@ -130,16 +144,16 @@ def if_sid_in_line(file_list, content):
     return content
 
 
-def start(commad, command2):
-    print("="*20)
-    print("process start {0} {1} {2}".format(command, command2, get_time()))
-    file1, is_text1 = get_text(LOCAL_PATH + commad, 1)
-    file2, is_text2 = get_text(LOG_PATH + command2, 1)
+def update_rules(file1_path, file2_path):
+    print(file1_path)
+    print(file2_path)
+    file1, is_text1 = get_text(file1_path, 1)
+    file2, is_text2 = get_text(file2_path, 1)
     if is_text1 and is_text2:
         # replace rules
         print("start replace the rules {0}".format(get_time()))
         file2_list = read_log(file2, 1)
-        with open(LOCAL_PATH + commad, "r") as f:
+        with open(file1_path, "r") as f:
             global  file_new
             file_new = ""
             lines = f.readlines()
@@ -157,24 +171,72 @@ def start(commad, command2):
             rate +=1
             progress(rate, len(file2_list))
         # file update
-        update_file(command, file_new)
+        update_file(file1_path.split("/")[-1], file_new)
         print("="*20)
         print("process end {0}".format(get_time()))
     else:
-        print("empty file!")
+        print("empty file : file1 {0} file2 {1}".format(is_text1, is_text2))
+
+
+def start(command="all", command2=""):
+    print("="*20)
+    print("process start {0} {1} {2}".format(command, command2, get_time()))
+    all_files = get_files(LOCAL_PATH, ["rules"]) 
+    print(all_files)
+    if command == "all":
+        print("="*20)
+        print("start search log files {0}".format(get_time()))
+        log_files = get_files(LOG_PATH, ["log"])
+        for file_name in log_files:
+            print(LOCAL_PATH + file_name.split("/")[-1].rstrip(".log"))
+            if LOCAL_PATH + file_name.split("/")[-1].rstrip(".log") in all_files:
+                print("="*20)
+                print("Now updating {0}".format(file_name))
+                update_rules(LOCAL_PATH + file_name.split("/")[-1].rstrip(".log"), file_name)
+            else:
+                print("="*20)
+                print("{0} is not in local path".format(file_name))
+
+    elif LOCAL_PATH + command in all_files:
+        print("="*20)
+        print("Now updating {0}".format(command))
+        update_rules(LOCAL_PATH + command, TEMP_PATH + command2)
+    else:
+        print("="*20)
+        print("{0} is not in local path".format(command))
 
 
 if __name__ == '__main__':
-    if len(sys.argv)>1:
+    if len(sys.argv) == 1:
+        print("""
+    Suricata Rules Replace
+
+    SR_Replace is short for Suricata Rules Replace , a tool to replace the local rules by reading log file.
+
+    Author : ali0th
+    Date   : 18/3/7
+    Email  : martin2877 at foxmail.com
+
+    Usage  : python SR_Replace.py [rules file] [log file]
+    example: 
+             python SR_Replace.py test
+             python SR_Replace.py all
+             python SR_Replace.py emerging-web_server.rules emerging-web_server.rules.log
+
+            """)
+        command = "emerging-web_server.rules"    ## 测试语句
+        command2 = "emerging-web_server.rules.log"    ## 测试语句
+        start(command, command2)
+    elif len(sys.argv) == 2:
         command = sys.argv[1]
-    elif len(sys.argv)>2:
+        if command == "test":
+            print("start test using emerging-web_specific_apps.rules emerging-web_server.rules.log")
+            command = "emerging-web_server.rules"    ## 测试语句
+            command2 = "emerging-web_server.rules.log"    ## 测试语句
+            start(command, command2)
+        elif command == "all":
+            start(command)
+    elif len(sys.argv) == 3:
+        command = sys.argv[1]
         command2 = sys.argv[2]
-    else:
-        command = "all"
-        command2 = ""
-
-    command = "emerging-web_specific_apps.rules"    ## 测试语句
-    command2 = "log"    ## 测试语句
-
-    start(command, command2)
-
+        start(command, command2)
