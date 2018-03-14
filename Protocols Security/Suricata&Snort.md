@@ -16,7 +16,6 @@ dalton
 
 10.0.83.9机子上的suricata
 
-root/tophant@017
 
 setup: `/usr/local/bin/suricata`
 log：`/usr/local/var/log/suricata`
