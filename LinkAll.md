@@ -109,7 +109,9 @@ http://defensecode.com/whitepapers.php
 
 http://www.skepticism.us/
 
+http://www.cnbraid.com/
 
+http://blog.icxun.cn/index.html
 
 
 ## Tools
