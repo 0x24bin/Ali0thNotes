@@ -1,4 +1,5 @@
 # -*- coding:utf8 -*-
+# python3
 """
     Suricata Rules Replace
 
@@ -235,7 +236,7 @@ if __name__ == '__main__':
             command2 = "emerging-web_server.rules.log"    ## 测试语句
             start(command, command2)
         elif command == "all":
-            start(command)
+            start()
     elif len(sys.argv) == 3:
         command = sys.argv[1]
         command2 = sys.argv[2]

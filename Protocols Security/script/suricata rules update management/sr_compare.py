@@ -1,4 +1,5 @@
 # -*- coding:utf8 -*-
+# python3
 """
 Suricata Rules Compare
 

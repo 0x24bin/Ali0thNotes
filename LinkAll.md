@@ -113,6 +113,26 @@ http://www.cnbraid.com/
 
 http://blog.icxun.cn/index.html
 
+http://www.xmanblog.net/
+
+https://phpinfo.me/
+
+http://www.acmtime.com/
+
+http://javaweb.org/
+
+http://www.sqlsec.com/
+
+http://www.am0s.com/
+
+http://www.nodiexiaoqiang.cn/
+
+https://strcpy.me/
+
+https://www.luolikong.vip/
+
+http://www.chokepoint.net/
+
 
 ## Tools
 
