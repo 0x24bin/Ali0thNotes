@@ -24,6 +24,7 @@
 20. http://resources.infosecinstitute.com/
 21. https://pentest.blog/
 22. https://blogs.securiteam.com/
+23. http://adsecurity.org/
 
 ## Article/Tools Collection
 
@@ -133,6 +134,14 @@ https://www.luolikong.vip/
 
 http://www.chokepoint.net/
 
+https://www.hackersb.cn/
+
+http://www.bowu8.com/
+
+http://www.secbox.cn/
+
+
+
 
 ## Tools
 
@@ -153,6 +162,8 @@ https://github.com/cuckoosandbox/cuckoo
 [免杀](https://github.com/backlion/secist_script)
 
 [haveibeenpwned](https://haveibeenpwned.com/)
+
+[security-tracker](https://salsa.debian.org/security-tracker-team/security-tracker/tree/master)
 
 ## Learn
 
