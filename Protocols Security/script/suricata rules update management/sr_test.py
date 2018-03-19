@@ -14,6 +14,13 @@ example:
         python SR_Test.py struts
         python SR_Test.py sid 12345 24567
         python SR_Test.py log pt-rules.rules.log
+
+TEST
+-t --all -k struts
+-t -f file -k struts
+-t --all -s 12345 23456
+-t -f file -s 12345 23564
+-t -f pt-rules.rules.log
 """
 
 import requests
