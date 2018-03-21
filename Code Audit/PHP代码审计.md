@@ -57,7 +57,16 @@ import_request_variable("cg"， "cg_");
 ### $$变量覆盖
 
 ```php
-
+## 提交参数chs，则可覆盖变量"$chs"的值。$key为chs时，$$key就变成$chs
+<?  
+$chs = '';  
+if($_POST && $charset != 'utf-8'){  
+    $chs = new Chinese('UTF-8', $charset);  
+    foreach($_POST as $key => $value){  
+        $$key = $chs->Convert($value);  
+    }  
+    unset($chs);  
+} 
 ```
 
 ### 全局变量覆盖漏洞
