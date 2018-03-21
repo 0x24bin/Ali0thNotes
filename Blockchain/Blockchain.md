@@ -57,7 +57,19 @@ http://zhibimo.com/read/xiaolai/ba-shi-jian-dang-zuo-peng-you/Preface.html
 
 
 
+## 漏洞/安全事件
 
+区块链安全 - 以太坊短地址攻击
+
+https://paper.seebug.org/545/
+
+DRC积极应对智能合约账户遭受黑客攻击事件
+
+https://mp.weixin.qq.com/s/kTunEa9AdO3mTlBp0Np5-g
+
+区块链安全 - DAO攻击事件解析
+
+https://paper.seebug.org/544/
 
 # 资料
 

@@ -230,7 +230,6 @@ lua缓冲的变量与rule规则的匹配无关。
 
 递增ScFlowintIncr & 递减ScFlowintDecr
 
-
 脚本示例：
 ```lua
 function init (args)
@@ -254,7 +253,6 @@ return 0
 
 
 2 辅助产生警告和事件，及输出日志
-
 
 先在yaml配置文件中开启此功能。
 ```yaml

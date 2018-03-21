@@ -34,6 +34,7 @@ extract($_GET);
 ```
 
 ### parse_str()
+
 解析字符串并注册成变量
 ```php
 $b=1;
@@ -43,6 +44,7 @@ Print_r($b);
 ```
 
 ### import_request_variables()
+
 ```php
 将 GET/POST/Cookie 变量导入到全局作用域中，全局变量注册。
 在5.4之后被取消，只可在4-4.1.0和5-5.4.0可用。
@@ -70,6 +72,7 @@ if($_POST && $charset != 'utf-8'){
 ```
 
 ### 全局变量覆盖漏洞
+
 原理：
 register_globals 是php中的一个控制选项，可以设置成off或者on, 默认为off, 决定是否将 EGPCS（Environment，GET，POST，Cookie，Server）变量注册为全局变量。
 如果register_globals打开的话, 客户端提交的数据中含有GLOBALS变量名, 就会覆盖服务器上的$GLOBALS变量.
@@ -1113,4 +1116,7 @@ PHP代码审计分段讲解
 
 https://github.com/bowu678/php_bugs
 
+https://github.com/jiangsir404/Audit-Learning
 
+
+https://read.douban.com/reader/ebook/16642056/
