@@ -1,20 +1,3 @@
-# What I should do everyday?
-
-- 写作
-    - 技术
-    - 思考
-    - 游记
-- 视频
-- 挖洞
-
-
-# What's the furture?
-
-机器学习
-
-大数据
-
-反病毒
 
 # Q
 redis除了写ssh key还有啥思路
