@@ -54,6 +54,8 @@
 
 汇总：https://www.t00ls.net/articles-40293.html
 
+http://hacktech.cn/
+
 http://xiaoxia.org/
 
 http://www.ebwill.com/

