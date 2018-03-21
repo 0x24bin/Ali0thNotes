@@ -784,7 +784,7 @@ helloworld
 ```
 
 
-## file_put_contents第二个参数传入数据
+## file_put_contents第二个参数传入数组
 
 原理：
 ```php
@@ -1076,11 +1076,15 @@ foreach时,addslashes对获得的value值进行处理，但没有处理key。
 ## 用来目录遍历的特别函数
 
 http://wooyun.webbaozi.com/bug_detail.php?wybug_id=wooyun-2014-088094
-stat函数
+lstat 函数
+
 http://wooyun.webbaozi.com/bug_detail.php?wybug_id=wooyun-2014-088071
 stream_resolve_include_path函数
+
 http://wooyun.webbaozi.com/bug_detail.php?wybug_id=wooyun-2014-083688
+
 http://wooyun.webbaozi.com/bug_detail.php?wybug_id=wooyun-2014-083457
+
 http://wooyun.webbaozi.com/bug_detail.php?wybug_id=wooyun-2014-083453
 
 
