@@ -29,7 +29,6 @@ def no_update_list(log_path):
     no_update_list = []
     new_add_list = []
     local_files = get_files(log_path, ["log"])
-    print local_files
     for file_path in local_files:
         content, is_text = get_text(file_path, "open")
         if is_text:

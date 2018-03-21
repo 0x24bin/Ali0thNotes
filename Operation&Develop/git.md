@@ -88,8 +88,21 @@ git commit -a
 
 提交至本地仓库 : git commit -m '备注信息'
 
+写issue和fix说明
+1. 修 Issue 就写：fixed #XX
+2. 小改直接就用一句话说清楚。
+3. 大改的，自己建一个 Issue 说清楚情况、方案、变化。。。。，然后同 1
+这里还有一个好处是，commit log 里面的 #XX GitHub 会显示成指向对应 Issue 的链接，对应地 Issue 里面也会出现这条 Issue 被哪个 commit 引用的提示。
+更屌炸天的是，类似 fixed #XX 这样的，GitHub 还会自动帮你把那条 Issue 给 close 掉。
 
+fixes #xxx
+fixed #xxx
+fix #xxx
+closes #xxx
+close #xxx
+closed #xxx
 
+如果你在commit的开头使用多个上述关键字加issue的引用的话，你就可以关闭多个issues。例如，This closes #34, closes #23, and closes example_user/example_repo#42将会关闭同一个仓库的34和23号issue以及”example_user/example_repo”仓库的42号issue。
 
 > git pull 取回更新，合并
 

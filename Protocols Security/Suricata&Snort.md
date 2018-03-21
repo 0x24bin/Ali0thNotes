@@ -31,7 +31,7 @@ suricata -i ens33 -v -c suricata.yaml -s pt-rules.rules.log.rules
 
 log：
 tail -f /usr/local/var/log/suricata/eve.json | grep ""
-tail -f var/log/suricata/eve.json | grep ""
+tail -f /var/log/suricata/eve.json | grep ""
 
 ```
 
@@ -91,14 +91,13 @@ tail -f http.log stats.log
 ```
 
 
-
-
-
 ## Rules
 `/etc/suricata/rules`
 
 ## 规则更新
-
+emerging-web_client.rules：更新与新增
+emerging-web_server.rules：更新与新增
+pt-rules.rules：自添加，更新与新增
 emerging-attack_response.rules：更新与新增
 emerging-current_events.rules：更新与新增
 emerging-dns.rules：更新与新增
@@ -111,16 +110,6 @@ emerging-smtp.rules：更新
 emerging-telnet.rules：更新
 emerging-user_agents.rules：更新与新增
 emerging-rpc.rules：全文注释，没更新
-
-
-进度：
-emerging-web_client.rules：更新与新增
-emerging-web_server.rules：更新与新增
-pt-rules.rules：自添加，更新与新增
-
-
-
-
 
 
 
@@ -211,6 +200,110 @@ alert http $HOME_NET any -> $EXTERNAL_NET any (msg:"ET USER_AGENTS Suspicious Us
 
 
 
+## Lua scripting
+
+![](pic/Suricata&Snort1.png)
+
+优点：
+1. 扩展规则检测能力
+2. 辅助产生警告和事件，及输出日志
+
+缺点：
+
+至少需要2G内存。
+
+
+### 使用说明
+
+1 扩展rule检测能力
+
+1) 在规则中，使用`lua`或`luajit`调用lua脚本。如：
+```s
+alert tcp any any -> any any (msg:"LUAJIT test"; luajit:test.lua; sid:1;)
+```
+
+2) lua脚本中，init指明缓冲区(buffers)，寄存flowvars或flowints。其中flowvars寄存变量,flowint寄存数量。
+如果只要计数的话，那就只用flowint即可大大提高速度。
+lua缓冲的变量与rule规则的匹配无关。
+
+3) 函数
+
+递增ScFlowintIncr & 递减ScFlowintDecr
+
+
+脚本示例：
+```lua
+function init (args)
+    local needs = {}
+    needs["http.request_headers"] = tostring(true)
+    needs["flowint"] = {"cnt_incr"}
+    return needs
+end
+
+function match(args)
+    a = ScFlowintIncr(0);
+    if a == 23 then
+        return 1
+    end
+
+    return 0
+end
+return 0
+```
+当这个脚本匹配到第23次，就会返回1，规则触发成功。
+
+
+2 辅助产生警告和事件，及输出日志
+
+
+先在yaml配置文件中开启此功能。
+```yaml
+outputs:
+  - lua:
+      enabled: yes
+      script-dir: /etc/suricata/lua/
+      scripts:
+        - stats.lua
+```
+待补充
+
+## 安装
+
+https://samiux.blogspot.com/2015/10/howto-luajit-on-suricata.html
+
+
+### 资料：
+
+别人的脚本：
+
+https://github.com/EmergingThreats/et-luajit-scripts
+
+https://github.com/inliniac/surilua
+
+官方文档：
+
+http://suricata.readthedocs.io/en/latest/rules/rule-lua-scripting.html
+
+http://suricata.readthedocs.io/en/latest/output/lua-output.html
+
+lua scripting 发展史：
+
+https://blog.inliniac.net/?s=lua&submit=Search
+
+lua手册：
+
+https://www.lua.org/manual/5.3/manual.html
+
+lua scripting相关使用阅读:
+
+https://suricon.net/wp-content/uploads/2016/11/SuriCon2016_ChrisWakelin.pdf
+
+https://blog.nviso.be/2017/03/10/developing-complex-suricata-rules-with-lua-part-1/
+
+https://blog.didierstevens.com/2008/04/29/pdf-let-me-count-the-ways/
+
+https://www.trustwave.com/Resources/SpiderLabs-Blog/Advanced-Malware-Detection-with-Suricata-Lua-Scripting/
+
 ## 安装
 
 https://redmine.openinfosecfoundation.org/projects/suricata/wiki/Suricata_Installation
@@ -245,9 +338,25 @@ gaba
 
 https://github.com/AlkenePan?tab=repositories
 
+跟suricata有关文章
 
+https://blog.inliniac.net/
 
+suricata4.0.1源码分析
 
+https://promisechen.github.io/suricata/review_4.0.1.html#id1
+
+suricata_tools
+
+https://github.com/regit?tab=repositories
+
+blog has suricata articles
+
+https://home.regit.org/
+
+https://github.com/regit/suri-stats
+
+https://blog.inliniac.net/2016/02/09/fuzzing-suricata-with-pcaps/
 
 # Snort
 
@@ -290,7 +399,6 @@ tar -xvzf snortrules-snapshot-<version>.tar.gz -C /etc/snort/rules
 ## 资料
 
 https://www.snort.org/documents
-
 
 
 

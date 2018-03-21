@@ -40,6 +40,7 @@
 10. [玄武实验室](http://xlab.tencent.com/cn/)
 11. [401trg](https://401trg.pw/)
 12. [misteralfa](http://misteralfa-hack.blogspot.kr/)
+13. [安全思维导图集合](https://github.com/SecWiki/sec-chart)
 
 ## Spacial Article
 
@@ -141,6 +142,7 @@ http://www.bowu8.com/
 
 http://www.secbox.cn/
 
+https://blog.nviso.be/
 
 https://drops.org.cn/
 
@@ -166,6 +168,10 @@ https://github.com/cuckoosandbox/cuckoo
 [haveibeenpwned](https://haveibeenpwned.com/)
 
 [security-tracker](https://salsa.debian.org/security-tracker-team/security-tracker/tree/master)
+
+https://github.com/rootphantomer/hack_tools_for_me
+
+https://github.com/xnianq/pentest_tools
 
 ## Learn
 
