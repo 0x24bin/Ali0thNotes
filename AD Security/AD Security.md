@@ -27,6 +27,12 @@ vxstream
 vmray
 
 
+远控工具
+
+SocksCap64
+
+
+
 ## 资料
 
 丢掉PSEXEC来横向渗透
