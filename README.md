@@ -20,5 +20,4 @@ ID: 木禾 / Ali0th
 
 Email: martin2877@foxmail.com
 
-Blog: martin2877.github.io
 
